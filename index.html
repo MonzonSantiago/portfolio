@@ -1,912 +1,524 @@
-
-                        <!DOCTYPE html>
-                        <html lang="en">
-                        <head>
-                            <meta charset="UTF-8">
-                            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-              <style>
-                body {
-                  background-color: white; /* Ensure the iframe has a white background */
-                }
-
-                :root{
-  --bg:#f2efe6; --panel:#fffdf6; --ink:#181c18; --dim:#68706a;
-  --side:#14181a; --side-ink:#e9ece7;
-  --lime:#b8e62e; --lime-d:#93c214;
-  --yellow:#ffd23f; --magenta:#ff3ea5; --wa:#25d366;
-  --line:rgba(24,28,24,.14);
-  --disp:'Archivo',sans-serif; --body:'Inter',sans-serif; --mono:'Space Mono',monospace;
-  --sbw:250px;
-}
-*{margin:0;padding:0;box-sizing:border-box}
-html{scroll-behavior:smooth}
-body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.65;overflow-x:hidden}
-img{display:block;max-width:100%}
-a{color:inherit;text-decoration:none}
-button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
-section{scroll-margin-top:20px}
-::selection{background:var(--lime);color:#000}
-:focus-visible{outline:3px solid var(--lime-d);outline-offset:3px}
-.wrap{max-width:1160px;margin:0 auto;padding:0 clamp(18px,4vw,48px)}
-.mono{font-family:var(--mono)}
-.dim{color:var(--dim)}
-
-/* ============ SIDEBAR ============ */
-#sidebar{position:fixed;inset:0 auto 0 0;width:var(--sbw);background:var(--side);color:var(--side-ink);
-  display:flex;flex-direction:column;padding:34px 0 26px;z-index:100}
-.logo{font-family:var(--disp);font-weight:900;font-size:1.7rem;letter-spacing:-.02em;padding:0 30px;color:#fff}
-.logo-dot{color:var(--lime)}
-#sideNav{position:relative;margin:auto 0;display:flex;flex-direction:column;padding:20px 0}
-#navIndicator{position:absolute;left:0;width:4px;height:22px;background:var(--lime);border-radius:0 4px 4px 0;
-  top:0;transition:top .35s cubic-bezier(.6,.05,.2,1),height .35s}
-.snav-link{position:relative;padding:11px 30px;font-weight:600;font-size:.98rem;color:#b9c0b8;letter-spacing:.02em;transition:color .2s,padding-left .25s}
-.snav-link:hover{color:#fff;padding-left:36px}
-.snav-link.is-active{color:var(--lime)}
-.side-foot{padding:0 30px;display:flex;flex-direction:column;gap:14px}
-.avail{display:flex;align-items:center;gap:9px;font-size:.82rem;color:#b9c0b8}
-.avail i{width:9px;height:9px;border-radius:50%;background:var(--lime);animation:pulse 1.8s infinite}
-@keyframes pulse{50%{box-shadow:0 0 0 8px rgba(184,230,46,.12)}}
-.socials{display:flex;gap:14px}
-.socials a{font-size:.72rem;color:#8b938a;border-bottom:1px solid transparent}
-.socials a:hover{color:var(--lime);border-color:var(--lime)}
-
-/* topbar móvil */
-#topbar{display:none;position:sticky;top:0;z-index:100;background:var(--side);color:#fff;
-  align-items:center;justify-content:space-between;padding:12px 18px}
-#burger{font-size:1.4rem}
-#mobileMenu{position:fixed;inset:0;z-index:150;background:var(--side);color:#fff;display:flex;flex-direction:column;
-  justify-content:center;gap:4px;padding:26px;transform:translateY(-100%);transition:transform .45s cubic-bezier(.7,0,.2,1)}
-body.menu-open #mobileMenu{transform:none}
-#mobileMenu a{font-family:var(--disp);font-weight:800;font-size:1.7rem;padding:12px 4px;border-bottom:1px solid #262b2d}
-#mobileMenu a:hover{color:var(--lime)}
-#mobileMenu .wa-mini{margin-top:16px;background:var(--wa);border:none;text-align:center;font-family:var(--body);font-weight:800;font-size:1.1rem;padding:16px;border-radius:12px}
-
-#main{margin-left:var(--sbw)}
-
-/* ============ HERO ============ */
-.hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;position:relative;padding:60px 0 0}
-.hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:clamp(24px,4vw,60px);align-items:center;flex:1}
-.kicker{font-size:.7rem;letter-spacing:.18em;color:var(--lime-d);font-weight:700;margin-bottom:18px}
-.hero-name{font-family:var(--disp);font-weight:900;font-size:clamp(3.2rem,7.2vw,6.6rem);line-height:.94;letter-spacing:-.02em;text-transform:uppercase}
-.line{display:block;overflow:hidden}
-.line>span{display:block;transform:translateY(110%);transition:transform .9s cubic-bezier(.2,.75,.15,1)}
-.line:nth-child(2)>span{transition-delay:.12s}
-body.loaded .line>span{transform:none}
-.hero-lead{margin:22px 0 28px;max-width:46ch;font-size:1.12rem;color:var(--dim)}
-.hero-lead b{color:var(--ink)}
-.hero-cta{display:flex;gap:14px;flex-wrap:wrap}
-.btn{display:inline-flex;align-items:center;gap:10px;font-weight:800;font-size:1rem;padding:15px 24px;border-radius:12px;
-  border:2px solid var(--ink);transition:transform .15s,box-shadow .15s;will-change:transform}
-.btn.wa{background:var(--wa);border-color:#128c4b;color:#fff}
-.btn.ghost{background:transparent;color:var(--ink)}
-.btn.big{font-size:clamp(1.1rem,2.4vw,1.45rem);padding:20px 36px;border-radius:16px}
-.hero-right{position:relative;min-height:480px}
-.joy{position:absolute;right:6px;bottom:-6px;font-size:1.6rem;filter:grayscale(.4);opacity:.7}
-.hero-stats{display:flex;gap:clamp(16px,3vw,36px);margin-top:34px;font-size:.74rem;color:var(--dim);flex-wrap:wrap}
-.hero-stats b{display:block;font-size:1.15rem;color:var(--ink)}
-.ticker{border-block:2px solid var(--ink);background:var(--lime);overflow:hidden;margin-top:44px}
-.track{display:flex;width:max-content;animation:mq 26s linear infinite}
-.ticker:hover .track{animation-play-state:paused}
-.track span{font-family:var(--disp);font-weight:800;font-size:.95rem;letter-spacing:.06em;padding:9px 0;white-space:nowrap;color:#111}
-@keyframes mq{to{transform:translateX(-50%)}}
-
-/* ============ SECCIONES ============ */
-.section{padding:clamp(70px,9vw,120px) 0}
-.sec-head{max-width:780px;margin-bottom:clamp(30px,4vw,50px)}
-.h2{font-family:var(--disp);font-weight:900;font-size:clamp(2rem,4.6vw,3.4rem);letter-spacing:-.015em;text-transform:uppercase;line-height:1.05}
-.huge{font-size:clamp(3rem,9vw,7rem)}
-.lead{margin-top:14px;color:var(--dim);font-size:1.08rem;max-width:62ch}
-.lead b{color:var(--ink)}
-.reveal{opacity:0;transform:translateY(30px);transition:opacity .8s,transform .8s cubic-bezier(.2,.75,.15,1)}
-.reveal.in{opacity:1;transform:none}
-
-/* filtros */
-.filters{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:34px}
-.fbtn{font-weight:700;font-size:.92rem;padding:10px 18px;border:2px solid var(--ink);border-radius:999px;background:var(--panel);transition:transform .15s,background .2s,color .2s}
-.fbtn:hover{transform:translateY(-2px)}
-.fbtn[aria-pressed="true"]{background:var(--ink);color:var(--lime)}
-
-/* cards de trabajos */
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(400px,100%),1fr));gap:clamp(22px,3vw,34px)}
-.card{position:relative;text-align:left;background:var(--panel);border:1px solid var(--line);border-radius:16px;overflow:hidden;
-  box-shadow:0 2px 10px rgba(24,28,24,.06);transition:transform .3s cubic-bezier(.2,.8,.2,1),box-shadow .3s;animation:cin .55s both}
-@keyframes cin{from{opacity:0;transform:translateY(26px)}}
-.card:hover{transform:translateY(-8px);box-shadow:12px 14px 0 var(--magenta)}
-.card::after{content:'';position:absolute;top:0;left:-80%;width:40%;height:100%;background:linear-gradient(105deg,transparent,rgba(255,255,255,.35),transparent);transform:skewX(-20deg);transition:left .55s;pointer-events:none}
-.card:hover::after{left:130%}
-.mb-bar{display:flex;align-items:center;gap:10px;padding:10px 14px;background:#eef0ea;border-bottom:1px solid var(--line)}
-.mb-dots{display:flex;gap:5px}
-.mb-dots i{width:10px;height:10px;border-radius:50%}
-.mb-dots i:nth-child(1){background:#ff5f57}.mb-dots i:nth-child(2){background:#febc2e}.mb-dots i:nth-child(3){background:#28c840}
-.mb-url{flex:1;background:#fff;border-radius:6px;font-family:var(--mono);font-size:.68rem;color:var(--dim);padding:4px 10px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.card .shot{position:relative;aspect-ratio:16/10;overflow:hidden;background:#e6e3d8}
-.card .shot img{width:100%;height:100%;object-fit:cover;transition:transform .8s cubic-bezier(.2,.7,.2,1)}
-.card:hover .shot img{transform:scale(1.06)}
-.score{position:absolute;top:12px;right:12px;width:46px;height:46px;border-radius:50%;background:var(--yellow);border:2px solid var(--ink);
-  display:grid;place-items:center;font-family:var(--mono);font-weight:700;font-size:.95rem;box-shadow:3px 3px 0 rgba(0,0,0,.35)}
-.card .body{padding:18px 20px 22px}
-.card h3{font-family:var(--disp);font-weight:800;font-size:1.3rem;margin-bottom:4px}
-.card .what{color:var(--dim);font-size:.98rem}
-.card .tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
-.tag{font-size:.74rem;font-weight:700;padding:4px 10px;border-radius:999px;border:1.5px solid var(--line);color:var(--dim)}
-.tag.type{background:var(--lime);border-color:var(--lime-d);color:#111}
-.tag.win{background:var(--ink);border-color:var(--ink);color:var(--lime)}
-
-/* flowing menu */
-.flowing-menu-wrap{height:clamp(340px,60vh,540px);border-block:2px solid var(--ink)}
-.fm-wrap{width:100%;height:100%;overflow:hidden;background:var(--bg)}
-.fm{display:flex;flex-direction:column;height:100%}
-.fm__item{flex:1;position:relative;overflow:hidden;text-align:center;border-top:1px solid var(--line)}
-.fm__item:first-child{border-top:none}
-.fm__link{display:flex;align-items:center;justify-content:center;height:100%;cursor:pointer;text-transform:uppercase;
-  white-space:nowrap;font-family:var(--disp);font-weight:800;font-size:clamp(1.5rem,4.5vh,2.8rem);letter-spacing:.01em;color:var(--ink);transition:color .25s}
-.fm__link:hover{color:var(--lime-d)}
-.fm_marquee{position:absolute;inset:0;overflow:hidden;pointer-events:none;background:var(--lime);transform:translate3d(0,101%,0)}
-.fm_marquee__inner-wrap{height:100%;overflow:hidden}
-.fm_marquee__inner{display:flex;align-items:center;height:100%;width:fit-content;will-change:transform}
-.fm_marquee__part{display:flex;align-items:center;flex-shrink:0;color:#111}
-.fm_marquee__part span{white-space:nowrap;text-transform:uppercase;font-family:var(--disp);font-weight:800;font-size:clamp(1.5rem,4.5vh,2.8rem);padding:0 1vw}
-.fm_marquee__img{width:clamp(140px,16vw,220px);height:clamp(52px,8vh,84px);margin:0 2vw;border:2px solid #111;border-radius:10px;background-size:cover;background-position:center}
-
-/* proceso */
-.steps{position:relative;display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(20px,3vw,40px)}
-.step-line{position:absolute;top:34px;left:4%;right:4%;height:3px;background:var(--line)}
-.step-line i{display:block;height:100%;width:0;background:var(--lime-d);transition:width 1.4s cubic-bezier(.2,.75,.2,1)}
-.steps.in .step-line i{width:100%}
-.step{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:28px 24px;transition:transform .25s,box-shadow .25s}
-.step:hover{transform:translateY(-6px);box-shadow:8px 10px 0 var(--lime)}
-.step-n{display:inline-grid;place-items:center;width:52px;height:52px;border-radius:50%;background:var(--ink);color:var(--lime);font-weight:700;margin-bottom:16px;position:relative;z-index:1}
-.step h3{font-family:var(--disp);font-weight:800;font-size:1.35rem;margin-bottom:8px}
-.step p{color:var(--dim);font-size:.98rem}
-.when{display:inline-block;margin-top:14px;font-size:.68rem;font-weight:700;letter-spacing:.1em;background:var(--lime);padding:5px 10px;border-radius:6px;color:#111}
-
-/* sobre mí */
-.about-grid{display:grid;grid-template-columns:300px 1fr;gap:clamp(24px,4vw,54px);align-items:center}
-.about-card{background:var(--side);color:#fff;border-radius:18px;padding:34px 24px;text-align:center}
-#avatar{display:grid;grid-template-columns:repeat(12,1fr);width:150px;aspect-ratio:12/15;margin:0 auto 20px;image-rendering:pixelated}
-#avatar i{display:block}
-.about-card h3{font-size:.95rem;letter-spacing:.08em}
-.about-card .dim{color:#8b938a;font-size:.68rem;letter-spacing:.12em}
-.about-text p{margin-bottom:16px;color:var(--dim);max-width:60ch}
-.about-text b{color:var(--ink)}
-.chips{display:flex;flex-wrap:wrap;gap:10px;margin-top:8px}
-.chip{background:var(--panel);border:1.5px solid var(--line);border-radius:999px;padding:8px 14px;font-size:.88rem;font-weight:600;transition:transform .2s,border-color .2s}
-.chip:hover{transform:translateY(-3px);border-color:var(--lime-d)}
-.quotes{display:grid;grid-template-columns:1fr 1fr;gap:clamp(18px,3vw,30px);margin-top:clamp(40px,6vw,64px)}
-.quote{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:26px;position:relative}
-.quote::before{content:'❝';position:absolute;top:-16px;left:18px;font-size:2.4rem;color:var(--yellow);text-shadow:2px 2px 0 var(--ink)}
-.quote p{font-size:1.02rem}
-.quote .who{display:block;margin-top:14px;font-weight:800;color:var(--lime-d)}
-
-/* contacto */
-.contact{text-align:center;background:var(--side);color:#fff}
-.contact .lead{color:#b9c0b8;margin:14px auto 34px}
-.contact .huge{color:#fff}
-.contact-alt{margin-top:22px;font-size:.72rem;letter-spacing:.12em;color:#8b938a}
-footer{background:var(--side);color:#8b938a;border-top:1px solid #262b2d;padding:22px 0}
-.foot{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;font-family:var(--mono);font-size:.66rem;letter-spacing:.08em}
-.foot .cheat{color:#4a5250}
-
-/* ============ MODAL ============ */
-#modal{position:fixed;inset:0;z-index:300;display:none;align-items:center;justify-content:center;padding:clamp(12px,3vw,36px)}
-#modal.open{display:flex}
-.m-back{position:absolute;inset:0;background:rgba(20,24,26,.7);backdrop-filter:blur(3px);animation:fin .25s both}
-@keyframes fin{from{opacity:0}}
-.m-panel{position:relative;background:var(--panel);border-radius:18px;width:min(980px,100%);max-height:92vh;overflow:auto;
-  border:1px solid var(--line);box-shadow:0 30px 80px rgba(0,0,0,.35);animation:min .4s cubic-bezier(.2,.9,.3,1.1) both}
-@keyframes min{from{opacity:0;transform:translateY(40px) scale(.97)}}
-.m-top{display:flex;justify-content:space-between;align-items:center;padding:14px 20px;border-bottom:1px solid var(--line);font-size:.7rem;letter-spacing:.12em;color:var(--dim)}
-.m-close{font-weight:800;font-size:.85rem;background:var(--ink);color:#fff;border-radius:8px;padding:8px 14px}
-.m-close:hover{background:var(--magenta)}
-.m-body{display:grid;grid-template-columns:1.15fr 1fr}
-.m-shot{border-right:1px solid var(--line)}
-.m-shot .mb-bar{border-radius:0}
-.m-shot img{width:100%;height:auto;max-height:520px;object-fit:cover}
-.m-side{padding:26px;display:flex;flex-direction:column;gap:14px}
-.m-side h3{font-family:var(--disp);font-weight:900;font-size:1.8rem}
-.m-que{color:var(--dim)}
-.lab{display:block;font-size:.62rem;letter-spacing:.16em;color:var(--lime-d);font-weight:700;margin-bottom:4px}
-.m-block p{font-size:.96rem;color:var(--dim)}
-.m-block .res{color:var(--ink);font-weight:700}
-.m-chips{display:flex;flex-wrap:wrap;gap:8px}
-.m-side .btn{margin-top:auto;justify-content:center}
-
-
-
-/* toasts */
-#toasts{position:fixed;right:16px;bottom:16px;z-index:400;display:flex;flex-direction:column;gap:10px}
-.toast{background:var(--side);color:#fff;border-left:4px solid var(--lime);border-radius:10px;padding:14px 18px;max-width:300px;font-weight:600;box-shadow:0 10px 30px rgba(0,0,0,.3);animation:tin .35s cubic-bezier(.2,.9,.3,1.2) both}
-@keyframes tin{from{opacity:0;transform:translateX(70px)}}
-.toast.bye{opacity:0;transform:translateX(70px);transition:.3s}
-.confetti{position:fixed;top:-16px;width:9px;height:9px;z-index:450;pointer-events:none;animation:fall 2.4s linear forwards}
-@keyframes fall{to{transform:translateY(110vh) rotate(540deg)}}
-
-/* ============ RESPONSIVE ============ */
-@media (max-width:1020px){
-  #sidebar{display:none}
-  #topbar{display:flex}
-  #main{margin-left:0}
-  .hero{min-height:0;padding-top:40px}
-  .hero-grid{grid-template-columns:1fr}
-  .hero-right{min-height:420px}
-  .steps{grid-template-columns:1fr}
-  .step-line{display:none}
-  .about-grid,.quotes,.m-body{grid-template-columns:1fr}
-  .m-shot{border-right:none;border-bottom:1px solid var(--line)}
-}
-@media (prefers-reduced-motion:reduce){
-  html{scroll-behavior:auto}
-  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
-  .track{animation:none}
-  .reveal{opacity:1;transform:none}
-  .line>span{transform:none}
-}
-
-
-              </style>
-                        </head>
-                        <body>
-                            <!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Santiago Monzon — Desarrollo Web · San Antonio de Areco</title>
-<meta name="description" content="Hago páginas web que traen clientes a tu negocio. Tiendas online, landings y sistemas. San Antonio de Areco, Buenos Aires.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800;900&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-<link rel="stylesheet" href="css/styles.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Santiago Monzón · Portfolio</title>
+<meta name="description" content="Desarrollo web desde Argentina. Conocé los proyectos, tecnologías y servicios de Santiago Monzón.">
+<style>
+:root { --blue:#2563eb; --ink:#172b48; --muted:#65738a; --panel:#f0f6ff; }
+* { box-sizing:border-box; }
+html,body { margin:0; height:100%; }
+body { font-family:Arial,Helvetica,sans-serif; background:#fff; color:var(--ink); overflow:hidden; }
+button,a { -webkit-tap-highlight-color:transparent; }
+.layout { display:grid; grid-template-columns:minmax(290px,34%) 1fr; height:100dvh; }
+.menu { background:#fff; border-right:2px solid var(--blue); padding:clamp(20px,4vh,40px) clamp(24px,3.6vw,56px); display:flex; flex-direction:column; justify-content:center; }
+.menu-portrait { display:block; flex-shrink:0; width:clamp(52px,9vh,72px); height:clamp(52px,9vh,72px); border-radius:50%; object-fit:cover; object-position:center; margin-bottom:20px; }
+.name { width:100%; margin:0 0 16px; font-size:clamp(38px,4.5vw,68px); line-height:1.04; font-weight:700; letter-spacing:-.04em; }
+.name span { display:block; width:max-content; white-space:nowrap; }
+.name span + span { margin-top:5px; }
+.menu-description { font-size:14px; color:var(--muted); line-height:1.5; margin:0 0 clamp(20px,4vh,36px); }
+.menu-options { display:flex; flex-direction:column; align-items:flex-start; gap:6px; }
+.menu-footer { margin-top:clamp(20px,4vh,36px); }
+.menu-footer::before { content:""; display:block; width:72px; height:1px; background:#d4dfef; margin-bottom:12px; }
+.social-links { display:flex; align-items:center; gap:16px; }
+.language-switch { display:flex; align-items:center; gap:18px; margin-top:10px; }
+.language-button { position:relative; appearance:none; border:0; background:transparent; padding:7px 0; color:var(--muted); font:inherit; font-size:12px; font-weight:700; letter-spacing:.1em; cursor:pointer; transition:color .25s ease; }
+.language-button::after { content:""; position:absolute; left:0; right:0; bottom:2px; height:2px; background:var(--blue); transform:scaleX(0); transition:transform .3s cubic-bezier(.4,0,.2,1); }
+.language-button:hover,.language-button[aria-pressed="true"] { color:var(--blue); }
+.language-button[aria-pressed="true"]::after { transform:scaleX(1); }
+.language-button:focus-visible { outline:2px dotted var(--blue); outline-offset:4px; }
+.social-link { display:inline-flex; justify-content:center; align-items:center; width:36px; height:36px; padding:6px; appearance:none; border:0; background:transparent; color:var(--muted); cursor:pointer; text-decoration:none; transition:color .2s ease,transform .3s cubic-bezier(.16,1,.3,1); }
+.social-link svg { width:24px; height:24px; }
+.social-link:hover { color:var(--blue); transform:translateY(-4px); }
+.social-link:focus-visible { outline:2px dotted var(--blue); outline-offset:4px; }
+.social-link:disabled { cursor:default; opacity:.65; }
+.social-link:disabled:hover { transform:none; color:var(--muted); }
+.option { appearance:none; border:0; background:transparent; color:var(--muted); padding:10px 0; font:inherit; font-size:clamp(22px,2.1vw,31px); font-weight:600; letter-spacing:.025em; cursor:pointer; text-align:left; transform-origin:left center; transition:color .4s cubic-bezier(.4,0,.2,1),transform .55s cubic-bezier(.4,0,.2,1),letter-spacing .55s cubic-bezier(.4,0,.2,1); }
+.option[data-highlighted="true"] { color:var(--blue); transform:translateX(18px) scale(1.035); letter-spacing:.055em; }
+.option:active { transform:translateX(18px) scale(1.015); }
+.option:focus { outline:none; }
+.option:focus-visible { outline:2px dotted var(--blue); outline-offset:6px; }
+.content { background:var(--panel); padding:clamp(32px,6vw,88px); display:flex; align-items:center; min-width:0; }
+.panel { width:100%; max-width:660px; }
+.panel[hidden] { display:none!important; }
+.panel.enter { animation:panel-in .42s cubic-bezier(.2,.8,.2,1) both; }
+.label { display:block; margin:0 0 22px; color:#2563eb; font-size:12px; letter-spacing:.12em; text-transform:uppercase; font-weight:700; }
+h2 { font-size:clamp(32px,4.5vw,58px); font-weight:600; line-height:1.08; letter-spacing:-.045em; margin:0 0 24px; max-width:620px; }
+p { color:#566985; font-size:clamp(16px,1.6vw,20px); line-height:1.65; margin:0; max-width:570px; }
+.links { display:flex; flex-wrap:wrap; gap:22px; margin-top:30px; }
+.links a { color:#1747a8; font-size:15px; font-weight:700; text-decoration:underline; text-underline-offset:5px; }
+.portrait { width:86px; height:86px; border-radius:50%; object-fit:cover; margin-bottom:24px; }
+.projects { margin:0; padding:0; list-style:none; }
+.projects li { padding:14px 0; border-bottom:1px solid #cadcf5; }
+.projects strong { display:block; margin-bottom:5px; }
+.projects small { color:#566985; line-height:1.5; display:block; }
+@keyframes panel-in { from { opacity:0; transform:translateX(20px); } to { opacity:1; transform:translateX(0); } }
+@media(max-height:650px) and (min-width:701px) { .menu { padding-top:18px;padding-bottom:18px; } .menu-portrait { width:48px;height:48px;margin-bottom:14px; } .name { margin-bottom:12px; } .menu-description { margin-bottom:16px; font-size:13px; } .social-links { margin-top:20px; } .option { padding:5px 0; font-size:clamp(20px,2vw,28px); } .content { padding-top:25px;padding-bottom:25px; } h2 { font-size:42px; } }
+@media(max-width:700px) { body { overflow:auto; } .layout { height:auto; min-height:100dvh; display:block; } .menu { padding:28px 24px; border-right:0; border-bottom:2px solid var(--blue); } .name { max-width:350px; margin-bottom:16px; } .menu-options { flex-direction:row; flex-wrap:wrap; gap:9px 22px; } .option { font-size:18px; } .option[data-highlighted="true"] { transform:translateY(-3px); } .social-links { margin-top:22px; } .content { padding:38px 24px; min-height:60dvh; } }
+@media(prefers-reduced-motion:reduce) { *,*::before,*::after { animation:none!important; transition:none!important; } }
+@media(max-height:650px) and (min-width:701px) {
+  .menu { padding-top:14px; padding-bottom:14px; }
+  .menu-portrait { width:44px; height:44px; margin-bottom:10px; }
+  .name { margin-bottom:10px; }
+  .menu-description { margin-bottom:12px; }
+  .menu-footer { margin-top:14px; }
+  .menu-footer::before { margin-bottom:8px; }
+  .menu-footer .social-links { margin-top:0; }
+  .language-switch { margin-top:4px; }
+}
+
+/* Right-hand screens */
+[hidden] { display:none!important; }
+.content { padding:clamp(24px,4vw,64px); overflow:hidden; }
+.panel { max-width:940px; }
+.panel h2 { font-size:clamp(30px,3.8vw,54px); line-height:1.1; margin-bottom:22px; }
+.panel-lead { font-size:clamp(16px,1.45vw,20px); line-height:1.65; max-width:640px; }
+.panel-actions { display:flex; gap:12px; flex-wrap:wrap; margin-top:28px; }
+.action { display:inline-flex; align-items:center; justify-content:center; appearance:none; border:1px solid #bdcee7; background:transparent; color:#1d478b; border-radius:999px; padding:12px 18px; font:inherit; font-size:14px; font-weight:600; text-decoration:none; cursor:pointer; transition:transform .25s ease,background .25s ease,box-shadow .25s ease; }
+.action:hover { transform:translateY(-3px); background:#e2edff; }
+.action.solid { background:#2563eb; border-color:#2563eb; color:#fff; }
+.action.solid:hover { background:#194fc6; box-shadow:0 8px 18px #2563eb22; }
+.action:focus-visible,.icon-control:focus-visible,.carousel-arrow:focus-visible,.stack-categories button:focus-visible,.project-dot:focus-visible { outline:2px dotted var(--blue); outline-offset:5px; }
+.home-services { border-top:1px solid #cbdcf2; margin-top:clamp(30px,6vh,56px); padding-top:22px; }
+.minor-heading { font-size:11px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:#536b8c; margin:0 0 18px; display:block; }
+.service-columns { display:grid; grid-template-columns:1fr 1fr; gap:30px; }
+.service-columns h4 { font-size:16px; margin:0 0 8px; font-weight:600; }
+.service-columns p { font-size:14px; line-height:1.6; }
+.profile-more { margin-top:18px; font-size:16px; max-width:640px; }
+.profile-details { display:grid; grid-template-columns:1fr 1.7fr; gap:28px; margin:30px 0 24px; border-top:1px solid #cbdcf2; padding-top:20px; }
+.profile-details dt { font-size:12px; color:#536b8c; font-weight:700; text-transform:uppercase; letter-spacing:.07em; margin-bottom:9px; }
+.profile-details dd { margin:0; font-size:14px; line-height:1.6; }
+.profile-social { display:flex; }
+.icon-control { display:inline-flex; align-items:center; justify-content:center; width:54px; height:54px; flex-shrink:0; appearance:none; border:1px solid #b9cfea; border-radius:50%; background:#ffffffa6; color:#234e8d; cursor:pointer; transition:color .3s,background .3s,transform .4s cubic-bezier(.2,.8,.2,1),box-shadow .3s; }
+.icon-control svg { width:24px; height:24px; pointer-events:none; }
+.icon-control:hover { color:#fff; background:#2563eb; border-color:#2563eb; transform:translateY(-4px); box-shadow:0 10px 22px #2563eb20; }
+.icon-control.compact { width:40px; height:40px; }
+.icon-control.compact svg { width:19px; height:19px; }
+.panel-projects .label { margin-bottom:18px; }
+.project-heading { display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:18px; min-height:52px; }
+.project-heading h2 { margin:0; font-size:clamp(28px,3vw,44px); }
+.project-heading-meta { display:flex; align-items:center; justify-content:flex-end; gap:10px; flex-wrap:wrap; }
+.project-status { color:#637593; font-size:11px; }
+.project-carousel { display:grid; grid-template-columns:40px minmax(0,1fr) 40px; gap:14px; align-items:center; }
+.project-carousel:focus-visible { outline:2px dotted var(--blue); outline-offset:7px; }
+.carousel-arrow { display:flex; align-items:center; justify-content:center; width:40px; height:60px; border:0; border-radius:20px; background:transparent; color:#55749b; cursor:pointer; transition:color .25s,background .25s,transform .3s; }
+.carousel-arrow svg { width:30px; height:30px; pointer-events:none; }
+.carousel-arrow:hover { background:#dfeaff; color:#2563eb; }
+.carousel-arrow:first-child:hover { transform:translateX(-4px); }
+.carousel-arrow:last-child:hover { transform:translateX(4px); }
+.project-card { position:relative; min-width:0; height:clamp(260px,42vh,440px); border:1px solid #c2d5ee; border-radius:22px; background:#fff; overflow:hidden; box-shadow:0 20px 45px -24px #173b6a44,0 3px 12px #234d7810; }
+#project-frame { width:100%; height:100%; border:0; display:block; background:#fff; }
+.project-placeholder { height:100%; padding:28px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px; text-align:center; background:linear-gradient(145deg,#fff,#f5f9ff); }
+.project-monogram { font-family:'Segoe UI Variable Display','Trebuchet MS',sans-serif; font-size:clamp(64px,7vw,110px); font-weight:700; line-height:1; letter-spacing:-.08em; color:#c6d8f4; user-select:none; }
+.project-placeholder strong { font-size:clamp(20px,2vw,28px); font-weight:600; letter-spacing:-.025em; }
+.project-placeholder p { font-size:14px; line-height:1.6; max-width:360px; }
+.project-dots { display:flex; align-items:center; justify-content:center; gap:6px; margin:12px 0 18px; }
+.project-dot { width:22px; height:22px; border:0; padding:0; background:transparent; cursor:pointer; display:grid; place-items:center; }
+.project-dot::after { content:''; width:6px; height:6px; border-radius:8px; background:#b2c6e1; transition:width .3s,background .3s; }
+.project-dot[aria-pressed="true"]::after { width:18px; background:#2563eb; }
+.project-details { padding:0 54px; }
+.project-details p { font-size:14px; line-height:1.55; max-width:100%; }
+.project-stack { display:flex; flex-wrap:wrap; gap:8px 16px; margin-top:12px; color:#506583; font-size:12px; }
+.project-stack span { display:inline-flex; gap:6px; align-items:center; }
+.project-stack img { width:18px; height:18px; }
+.project-details .project-help { margin-top:12px; font-size:11px; color:#7587a0; }
+.panel-stack { font-family:'Segoe UI Variable Text','Segoe UI',sans-serif; }
+.panel-stack h2 { font-family:'Segoe UI Variable Display','Trebuchet MS',sans-serif; font-size:clamp(38px,4.2vw,60px); font-weight:650; letter-spacing:-.04em; line-height:1.08; margin-bottom:18px; }
+.panel-stack .panel-lead { font-size:clamp(16px,1.4vw,19px); }
+.stack-categories { display:flex; flex-wrap:wrap; gap:8px 24px; border-bottom:1px solid #cbdcf2; margin:26px 0 30px; }
+.stack-categories button { border:0; background:transparent; font:inherit; font-size:15px; font-weight:600; letter-spacing:-.02em; color:#75839a; padding:10px 0 14px; cursor:pointer; position:relative; transition:color .3s; }
+.stack-categories button:hover { color:#234e8d; }
+.stack-categories button[aria-pressed="true"] { color:#2563eb; }
+.stack-categories button::after { content:''; position:absolute; left:0; right:0; bottom:-1px; height:3px; background:#2563eb; border-radius:3px; transform:scaleX(0); transform-origin:left; transition:transform .35s; }
+.stack-categories button[aria-pressed="true"]::after { transform:scaleX(1); }
+.stack-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:28px 20px; min-height:188px; }
+.stack-item { display:flex; align-items:center; flex-direction:column; gap:14px; text-align:center; color:#1a3558; padding:6px 0; animation:stack-in .45s cubic-bezier(.2,.8,.2,1) both; animation-delay:calc(var(--i,0) * 35ms); }
+.stack-item span { font-family:'Segoe UI Variable Display','Trebuchet MS',sans-serif; font-size:clamp(18px,1.8vw,26px); font-weight:600; letter-spacing:-.025em; line-height:1.15; }
+.stack-item img { width:48px; height:48px; object-fit:contain; transition:transform .45s cubic-bezier(.2,.8,.2,1),filter .3s; }
+.stack-item:hover img { transform:translateY(-5px) rotate(-5deg); filter:drop-shadow(0 6px 7px #173b6a20); }
+@keyframes stack-in { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
+.tech-foot { font-size:14px; line-height:1.6; margin-top:26px; padding-top:18px; border-top:1px solid #cbdcf2; color:#6f8098; }
+.contact-icons { display:flex; align-items:center; gap:24px; margin:38px 0 24px; }
+.contact-icon { width:82px; height:82px; border-width:1px; background:#fff; box-shadow:0 6px 18px #234d7808; }
+.contact-icon svg { width:33px; height:33px; }
+.contact-icon:hover { transform:translateY(-7px) scale(1.035); }
+.contact-hint { font-size:14px; }
+.contact-foot { font-size:13px; margin-top:30px; padding-top:20px; border-top:1px solid #cbdcf2; }
+.sr-only { position:absolute; width:1px; height:1px; margin:-1px; clip:rect(0,0,0,0); overflow:hidden; }
+#action-dialog { border:1px solid #d9e4f3; border-radius:26px; background:#fff; color:var(--ink); width:min(480px,calc(100vw - 40px)); padding:38px; box-shadow:0 30px 100px #173b6a30; }
+#action-dialog[open] { animation:dialog-in .25s ease both; }
+#action-dialog::backdrop { background:#12244155; backdrop-filter:blur(7px); }
+#action-form { position:relative; }
+.dialog-close { position:absolute; right:-16px; top:-16px; display:grid; place-items:center; width:34px; height:34px; border:0; border-radius:50%; color:#66758c; background:#f0f5fc; cursor:pointer; }
+.dialog-close svg { width:18px; height:18px; pointer-events:none; }
+.dialog-close:focus-visible { outline:2px solid #2563eb; outline-offset:3px; }
+.dialog-icon { display:flex; align-items:center; justify-content:center; width:54px; height:54px; border-radius:16px; background:#edf4ff; color:#2563eb; margin-bottom:22px; }
+.dialog-icon svg { width:28px; height:28px; }
+#action-dialog h2 { font-size:30px; line-height:1.15; letter-spacing:-.04em; margin-bottom:14px; }
+#dialog-description { font-size:14px; line-height:1.6; }
+#message-field { margin-top:24px; }
+#message-field label { display:block; font-size:13px; font-weight:600; margin-bottom:10px; }
+#inquiry-message { display:block; resize:vertical; width:100%; min-height:100px; max-height:200px; font:inherit; font-size:14px; line-height:1.6; padding:14px; border:1px solid #c4d3e7; border-radius:12px; color:var(--ink); background:#f7faff; }
+#inquiry-message::placeholder { color:#8392a8; }
+#inquiry-message:focus { outline:2px solid #2563eb; outline-offset:2px; }
+#dialog-continue { margin-top:24px; width:100%; }
+@keyframes dialog-in { from { opacity:0; transform:translateY(12px) scale(.97); } to { opacity:1; transform:translateY(0) scale(1); } }
+@media(max-height:650px) and (min-width:701px) {
+ .content { padding:24px 32px; }
+ .panel .label { margin-bottom:14px; }
+ .panel h2 { font-size:clamp(28px,3.4vw,44px); }
+ .panel:not(.panel-projects) h2 { margin-bottom:16px; }
+ .panel-lead { font-size:16px; line-height:1.55; }
+ .profile-more { margin-top:14px; font-size:14px; }
+ .profile-details { margin:20px 0; padding-top:16px; }
+ .panel-projects .label { margin-bottom:10px; }
+ .project-heading { margin-bottom:12px; min-height:40px; }
+ .project-heading h2 { font-size:28px; margin:0; }
+ .project-card { height:clamp(210px,39vh,270px); border-radius:18px; }
+ .project-dots { margin:8px 0 12px; }
+ .project-stack { margin-top:9px; }
+ .project-details .project-help { margin-top:8px; }
+ .home-services { margin-top:28px; }
+ .panel-stack h2 { font-size:38px; }
+ .stack-categories { margin:20px 0 22px; gap:6px 18px; }
+ .stack-categories button { font-size:14px; }
+ .stack-grid { min-height:150px; gap:20px 16px; }
+ .stack-item { gap:10px; }
+ .stack-item img { width:38px; height:38px; }
+ .stack-item span { font-size:20px; }
+ .tech-foot { margin-top:18px; padding-top:14px; font-size:13px; }
+ .contact-icons { margin-top:28px; }
+ #action-dialog { max-height:calc(100dvh - 28px); padding:28px; }
+}
+@media(max-width:700px) {
+ .content { overflow:visible; padding:38px 24px; }
+ .panel h2 { font-size:34px; }
+ .service-columns { gap:20px; }
+ .profile-details { grid-template-columns:1fr; gap:18px; }
+ .project-heading { align-items:flex-start; gap:10px; }
+ .project-heading h2 { font-size:28px; }
+ .project-heading-meta { gap:6px; max-width:44%; }
+ .project-status { width:100%; font-size:10px; text-align:right; }
+ .project-carousel { grid-template-columns:24px minmax(0,1fr) 24px; gap:6px; }
+ .carousel-arrow { width:24px; height:48px; }
+ .carousel-arrow svg { width:23px; }
+ .project-card { height:310px; border-radius:16px; }
+ .project-details { padding:0 30px; }
+ .project-placeholder { padding:18px; }
+ .panel-stack h2 { font-size:40px; }
+ .stack-categories { gap:6px 20px; }
+ .stack-categories button { font-size:14px; }
+ .stack-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+ .stack-item span { font-size:24px; }
+ .contact-icons { gap:20px; }
+ .contact-icon { width:72px; height:72px; }
+ #action-dialog { padding:28px; max-height:calc(100dvh - 32px); }
+}
+
+.apa-preview-logo{width:min(160px,40%);height:140px;object-fit:contain}.project-placeholder [hidden]{display:none!important}#preview-error,#preview-legacy-note{font-size:11px;line-height:1.4;color:#526584;margin-bottom:8px}#preview-error{color:#945d1b}
+
+/* Project descriptions */
+.content:has(.panel-projects:not([hidden])){padding:clamp(24px,3.5vw,50px)}
+.panel-projects{height:min(620px,100%);min-height:0;display:flex;flex-direction:column;max-width:940px}
+.panel-projects>.label{margin-bottom:16px}
+.project-heading{flex:none;margin-bottom:20px}
+.project-heading h2{font-size:clamp(28px,3vw,44px)}
+.project-carousel{flex:1;min-height:0;grid-template-rows:minmax(0,1fr)}
+.project-summary{height:100%;min-height:0;padding:clamp(24px,3vw,44px);display:flex;flex-direction:column;justify-content:center;gap:32px;border-color:#cbdcf2;box-shadow:0 16px 36px -28px #173b6a35;background:#ffffffb8}
+.project-section-label{margin:0 0 14px;font-size:11px;line-height:1.4;letter-spacing:.11em;text-transform:uppercase;font-weight:700;color:#2563eb}
+.project-about p{font-size:clamp(18px,1.8vw,25px);line-height:1.6;color:#243e60;max-width:620px}
+.project-tools{border-top:1px solid #d8e4f3;padding-top:24px}
+.project-tools .project-stack{margin:0;gap:12px 20px;font-size:14px;line-height:1.5;color:#426083}
+.project-tools .project-stack img{width:22px;height:22px}
+.project-dots{flex:none;margin:16px 0 0}
+@media(max-height:650px) and (min-width:701px){.project-summary{gap:20px;padding:24px}.project-about p{font-size:18px}.project-tools{padding-top:16px}.project-section-label{margin-bottom:10px}.project-heading{margin-bottom:12px}.project-tools .project-stack{gap:8px 16px}}
+@media(max-width:700px){.panel-projects{height:auto;min-height:440px}.project-carousel{flex:auto}.project-summary{min-height:320px;padding:24px 20px}.project-heading{gap:12px;flex-wrap:wrap}.project-heading h2{font-size:28px}.project-about p{font-size:18px}.project-tools .project-stack{font-size:13px}}
+</style>
 </head>
 <body>
-
-<!-- ============ SIDEBAR ============ -->
-<aside id="sidebar">
-  <a class="logo" href="#inicio" aria-label="Inicio">SM<span class="logo-dot">.</span></a>
-  <nav id="sideNav" aria-label="Menú principal">
-    <span id="navIndicator" aria-hidden="true"></span>
-    <a href="#inicio" class="snav-link is-active">Inicio</a>
-    <a href="#trabajos" class="snav-link">Trabajos</a>
-    <a href="#servicios" class="snav-link">Servicios</a>
-    <a href="#proceso" class="snav-link">Proceso</a>
-    <a href="#sobremi" class="snav-link">Sobre mí</a>
-    <a href="#contacto" class="snav-link">Contacto</a>
-  </nav>
-  <div class="side-foot">
-    <span class="avail"><i></i>Disponible para proyectos</span>
-    <div class="socials mono">
-      <a href="#" aria-label="GitHub">GH</a><a href="#" aria-label="Instagram">IG</a><a href="#" aria-label="LinkedIn">LI</a>
-    </div>
-  </div>
-</aside>
-
-<header id="topbar">
-  <a class="logo" href="#inicio">SM<span class="logo-dot">.</span></a>
-  <button id="burger" aria-label="Abrir menú">☰</button>
-</header>
-<div id="mobileMenu">
-  <a href="#inicio">Inicio</a><a href="#trabajos">Trabajos</a><a href="#servicios">Servicios</a>
-  <a href="#proceso">Proceso</a><a href="#sobremi">Sobre mí</a><a href="#contacto">Contacto</a>
-  <a class="wa-mini" href="https://wa.me/542325458638" target="_blank" rel="noopener">💬 WhatsApp</a>
+<main class="layout">
+<nav class="menu" aria-label="Secciones del portfolio">
+<img class="menu-portrait" src="https://github.com/MonzonSantiago.png" alt="Foto de Santiago Monzón" width="72" height="72" decoding="async">
+<h1 class="name"><span>SANTIAGO</span> <span>MONZÓN</span></h1>
+<p class="menu-description" data-i18n="description">Desarrollador web · Argentina</p>
+<div class="menu-options" role="tablist" aria-orientation="vertical">
+<button class="option" id="tab-inicio" data-i18n="homeTab" role="tab" aria-selected="true" aria-controls="inicio" data-panel="inicio">INICIO</button>
+<button class="option" id="tab-perfil" data-i18n="profileTab" role="tab" aria-selected="false" aria-controls="perfil" data-panel="perfil" tabindex="-1">PERFIL</button>
+<button class="option" id="tab-proyectos" data-i18n="projectsTab" role="tab" aria-selected="false" aria-controls="proyectos" data-panel="proyectos" tabindex="-1">PROYECTOS</button>
+<button class="option" id="tab-tecnologias" data-i18n="techTab" role="tab" aria-selected="false" aria-controls="tecnologias" data-panel="tecnologias" tabindex="-1">TECNOLOGÍAS</button>
+<button class="option" id="tab-contacto" data-i18n="contactTab" role="tab" aria-selected="false" aria-controls="contacto" data-panel="contacto" tabindex="-1">CONTACTO</button>
 </div>
-
-<main id="main">
-
-  <!-- ============ HERO ============ -->
-  <section id="inicio" class="hero">
-    <div class="wrap hero-grid">
-      <div class="hero-left">
-        <p class="kicker mono">DESARROLLADOR WEB · SAN ANTONIO DE ARECO 🇦🇷</p>
-        <h1 class="hero-name">
-          <span class="line"><span>SANTIAGO</span></span>
-          <span class="line"><span>MONZON</span></span>
-        </h1>
-        <p class="hero-lead">Hago <b>páginas web que traen clientes</b> a tu negocio. Rápidas, claras y fáciles de usar. Vos contame tu negocio en criollo — del código me encargo yo.</p>
-        <div class="hero-cta">
-          <a class="btn wa mag" href="https://wa.me/542325458638?text=Hola%20Santiago!%20Quiero%20una%20p%C3%A1gina%20web%20para%20mi%20negocio" target="_blank" rel="noopener">💬 Escribir por WhatsApp</a>
-          <a class="btn ghost mag" href="#trabajos">Ver trabajos ↓</a>
-        </div>
-        <div class="hero-stats mono">
-          <span><b data-count="24">0</b> webs entregadas</span>
-          <span><b data-count="5">0</b> años de experiencia</span>
-          <span><b>24h</b> tiempo de respuesta</span>
-        </div>
-      </div>
-      <div class="hero-right">
-        <div class="swap-wrap" id="cardswap" aria-label="Mis últimos trabajos"></div>
-        <span class="joy" aria-hidden="true">🕹️</span>
-      </div>
-    </div>
-    <div class="ticker" aria-hidden="true">
-      <div class="track">
-        <span>TIENDAS ONLINE ✦ PÁGINAS DE NEGOCIO ✦ LANDINGS  SISTEMAS DE TURNOS  WORDPRESS ✦ DISEÑO A MEDIDA ✦ VELOCIDAD ✦ SEO ✦&nbsp;</span>
-        <span>TIENDAS ONLINE ✦ PÁGINAS DE NEGOCIO ✦ LANDINGS  SISTEMAS DE TURNOS ✦ WORDPRESS ✦ DISEÑO A MEDIDA ✦ VELOCIDAD ✦ SEO ✦&nbsp;</span>
-      </div>
-    </div>
-  </section>
-
-  <!-- ============ TRABAJOS ============ -->
-    <section id="trabajos" class="section">
-    <div class="wrap">
-      <div class="sec-head reveal">
-        <p class="kicker mono">PORTFOLIO</p>
-        <h2 class="h2" data-scramble>TRABAJOS SELECCIONADOS</h2>
-        <p class="lead">El del centro es el que está en exhibición: rotá la vidriera con las flechas, arrastrando o con ← →. El número amarillo es el <b>score de rendimiento</b>. ¿Querés ver todos juntos? Pasá a grilla.</p>
-        <div class="view-toggle" role="group" aria-label="Cambiar vista">
-          <button id="viewVidriera" class="vt-btn on" aria-pressed="true">⊟ VIDRIERA</button>
-          <button id="viewGrilla" class="vt-btn" aria-pressed="false">⊞ GRILLA</button>
-        </div>
-      </div>
-      <div class="filters" id="filters" role="group" aria-label="Filtrar trabajos"></div>
-    </div>
-
-    <div id="vidrieraWrap">
-      <div class="showcase">
-        <button class="sc-arrow prev" id="scPrev" aria-label="Proyecto anterior">←</button>
-        <div class="sc-stage" id="scStage"></div>
-        <button class="sc-arrow next" id="scNext" aria-label="Proyecto siguiente">→</button>
-      </div>
-      <div class="wrap">
-        <div class="sc-info" id="scInfo">
-          <h3 id="scName"></h3>
-          <p class="sc-what" id="scWhat"></p>
-          <div class="sc-tags" id="scTags"></div>
-          <div class="sc-cta">
-            <button class="btn ghost mag" id="scDetail">Ver detalle del caso →</button>
-            <a class="btn wa mag" id="scWa" href="#" target="_blank" rel="noopener">💬 Quiero algo así</a>
-          </div>
-        </div>
-        <div class="sc-dots" id="scDots"></div>
-        <p class="sc-hint mono">← → CON EL TECLADO · TOCÁ LOS COSTADOS PARA ROTAR · TOCÁ EL DEL CENTRO PARA EL DETALLE · ROTA SOLA CADA 6s</p>
-      </div>
-    </div>
-
-    <div id="gridWrap" class="wrap" hidden>
-      <div class="grid" id="grid"></div>
-    </div>
-  </section>
-
-  <!-- ============ SERVICIOS ============ -->
-  <section id="servicios" class="section">
-    <div class="wrap">
-      <div class="sec-head reveal">
-        <p class="kicker mono">SERVICIOS</p>
-        <h2 class="h2" data-scramble>LO QUE PUEDO HACER POR VOS</h2>
-        <p class="lead">Pasá el mouse para ver ejemplos reales de cada servicio. Tocá uno y te llevo a los trabajos de ese tipo.</p>
-      </div>
-    </div>
-    <div class="flowing-menu-wrap" id="flowingMenu"></div>
-  </section>
-
-  <!-- ============ PROCESO ============ -->
-  <section id="proceso" class="section">
-    <div class="wrap">
-      <div class="sec-head reveal">
-        <p class="kicker mono">PROCESO</p>
-        <h2 class="h2" data-scramble>ASÍ TRABAJAMOS JUNTOS</h2>
-        <p class="lead">Tres pasos, sin tecnicismos y sin sorpresas. Siempre sabés en qué estamos y cuánto falta.</p>
-      </div>
-      <div class="steps">
-        <div class="step-line" aria-hidden="true"><i></i></div>
-        <div class="step reveal"><span class="step-n mono">01</span><h3>Hablamos</h3><p>Me contás por WhatsApp qué hace tu negocio y qué necesitás. Te paso precio y tiempos claros, sin compromiso.</p><span class="when mono">EL MISMO DÍA</span></div>
-        <div class="step reveal"><span class="step-n mono">02</span><h3>Diseño y construyo</h3><p>Te muestro el diseño y lo ajustamos juntos hasta que te encante. Después lo programo rápido y prolijo.</p><span class="when mono">~1 SEMANA</span></div>
-        <div class="step reveal"><span class="step-n mono">03</span><h3>Tu página funcionando</h3><p>La publico, la dejo andando en Google y te enseño a usarla. Y después sigo cerca por si necesitás algo.</p><span class="when mono">2–3 SEMANAS</span></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ============ SOBRE MÍ ============ -->
-  <section id="sobremi" class="section">
-    <div class="wrap">
-      <div class="sec-head reveal">
-        <p class="kicker mono">SOBRE MÍ</p>
-        <h2 class="h2" data-scramble>QUIÉN ESTÁ DETRÁS</h2>
-      </div>
-      <div class="about-grid reveal">
-        <div class="about-card">
-          <div id="avatar" role="img" aria-label="Avatar pixel de Santiago"></div>
-          <h3 class="mono">SANTIAGO MONZON</h3>
-          <p class="mono dim">WEB DEVELOPER · FREELANCE</p>
-        </div>
-        <div class="about-text">
-          <p>De pibe quería hacer videojuegos. Aprendí a programar para entender cómo funcionaban, y descubrí que <b>una buena página web se siente como un buen juego</b>: te atrapa, te guía y te deja con ganas de volver.</p>
-          <p>Hoy hago páginas para <b>comercios y emprendedores de toda Argentina</b>, explicando todo en criollo. Mi promesa: una web clara, rápida y que vos puedas usar sin depender de nadie.</p>
-          <div class="chips">
-            <span class="chip">🎮 Gamer retro</span>
-            <span class="chip">🧉 Matero serial</span>
-            <span class="chip">🚗 San Antonio de Areco</span>
-            <span class="chip">⚡ Obsesionado con la velocidad</span>
-            <span class="chip">🤝 Trato humano, siempre</span>
-          </div>
-        </div>
-      </div>
-      <div class="quotes">
-        <div class="quote reveal"><p>Le expliqué con palabras simples lo que quería y me hizo exactamente eso. La página me trajo clientes nuevos.</p><span class="who">Marta — Almacén La Esperanza</span></div>
-        <div class="quote reveal"><p>Yo no entiendo de computadoras y Santi me explicó todo con paciencia. Hoy vendo por mi página sin ayuda de nadie.</p><span class="who">Roberto — Herrería El Tigre</span></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ============ CONTACTO ============ -->
-  <section id="contacto" class="section contact">
-    <div class="wrap">
-      <h2 class="h2 huge reveal">¿HABLAMOS?</h2>
-      <p class="lead reveal">Contame tu idea y te respondo en el día. Sin compromiso y sin tecnicismos.</p>
-      <a class="btn wa big mag reveal" href="https://wa.me/542325458638?text=Hola%20Santiago!%20Quiero%20una%20p%C3%A1gina%20web%20para%20mi%20negocio" target="_blank" rel="noopener">💬 ESCRIBIR POR WHATSAPP</a>
-      <p class="contact-alt mono reveal">O POR MAIL: HOLA@SANTIAGOMONZON.DEV · SAN ANTONIO DE ARECO, BS. AS.</p>
-    </div>
-  </section>
-
-  <footer>
-    <div class="wrap foot">
-      <span>© 2026 SANTIAGO MONZON — HECHO A MANO EN ARECO 🧉</span>
-      <span class="cheat">LOS QUE SABEN, SABEN: ↑↑↓↓←→←→ B A</span>
-    </div>
-  </footer>
+<footer class="menu-footer">
+<div class="social-links" aria-label="Redes y contacto">
+<button type="button" class="social-link" data-channel="github"  data-icon-label="github" aria-label="GitHub"><svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.57.1.78-.25.78-.55v-2.14c-3.2.69-3.88-1.36-3.88-1.36-.52-1.33-1.28-1.69-1.28-1.69-1.05-.72.08-.7.08-.7 1.16.08 1.76 1.19 1.76 1.19 1.03 1.76 2.69 1.25 3.35.96.1-.74.4-1.25.73-1.54-2.55-.29-5.23-1.28-5.23-5.69 0-1.25.45-2.28 1.18-3.08-.12-.29-.51-1.46.11-3.04 0 0 .96-.31 3.16 1.18a10.97 10.97 0 0 1 5.75 0c2.2-1.49 3.16-1.18 3.16-1.18.62 1.58.23 2.75.11 3.04.73.8 1.18 1.83 1.18 3.08 0 4.42-2.69 5.39-5.25 5.68.41.36.78 1.06.78 2.13v3.16c0 .3.21.66.79.55A11.51 11.51 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5Z"/></svg></button>
+<button type="button" class="social-link" data-channel="email"  data-icon-label="email" aria-label="Email"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m3 5 9 7 9-7"/></svg></button>
+<button type="button" class="social-link" data-channel="whatsapp"  data-icon-label="whatsapp" aria-label="WhatsApp"><svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M20.52 3.48A11.9 11.9 0 0 0 12.03 0C5.4 0 .01 5.39 0 12.02c0 2.12.55 4.2 1.6 6.03L0 24l6.11-1.6a12.02 12.02 0 0 0 5.9 1.51h.01c6.62 0 12.01-5.39 12.02-12.02a11.92 11.92 0 0 0-3.52-8.41ZM12.02 21.9a9.94 9.94 0 0 1-5.07-1.39l-.36-.21-3.63.95.97-3.53-.23-.37a9.93 9.93 0 0 1-1.52-5.33c0-5.5 4.48-9.97 9.98-9.97a9.9 9.9 0 0 1 7.06 2.92 9.9 9.9 0 0 1 2.92 7.06c-.01 5.5-4.49 9.87-10.12 9.87Zm5.47-7.45c-.3-.15-1.77-.87-2.04-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.17-.17.2-.35.22-.65.07-.3-.15-1.26-.46-2.4-1.48-.89-.79-1.48-1.77-1.66-2.07-.17-.3-.02-.46.13-.61.14-.13.3-.35.45-.52.15-.18.2-.3.3-.5.1-.2.05-.37-.03-.52-.07-.15-.67-1.62-.92-2.22-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.79.37-.27.3-1.04 1.02-1.04 2.49s1.07 2.89 1.22 3.09c.15.2 2.11 3.22 5.11 4.52.71.31 1.26.5 1.69.64.71.23 1.35.2 1.86.12.57-.09 1.77-.72 2.02-1.42.25-.69.25-1.29.17-1.41-.07-.13-.27-.2-.57-.35Z"/></svg></button>
+</div>
+<div class="language-switch" role="group" aria-label="Idioma">
+<button class="language-button" type="button" data-language="es" lang="es" aria-pressed="true" aria-label="Español">ES</button>
+<button class="language-button" type="button" data-language="en" lang="en" aria-pressed="false" aria-label="English">EN</button>
+<button class="language-button" type="button" data-language="pt" lang="pt-BR" aria-pressed="false" aria-label="Português">PT</button>
+</div>
+</footer>
+</nav>
+<section class="content">
+<article class="panel panel-home" id="inicio" role="tabpanel" aria-labelledby="tab-inicio">
+<span class="label" data-i18n="homeLabel">Desarrollo web, con intención.</span> <h2 data-i18n="homeTitle">Creo webs que convierten.</h2>
+<p class="panel-lead" data-i18n="homeText">Para que entiendan lo que hacés, vean lo que te diferencia y sepan cómo contactarte. Diseño y desarrollo sitios claros para negocios y profesionales.</p>
+<div class="panel-actions"><button type="button" class="action solid" data-go="contacto" data-i18n="homeCTA">Contame tu idea ↗</button><button type="button" class="action " data-go="proyectos" data-i18n="workCTA">Explorar proyectos ↗</button></div>
+<div class="home-services"><h3 class="minor-heading" data-i18n="servicesLabel">En qué te puedo ayudar</h3><div class="service-columns"><div><h4 data-i18n="serviceWeb">Webs y portfolios</h4><p data-i18n="serviceWebText">Tu propuesta, tus trabajos y el contacto, bien ordenados.</p></div><div><h4 data-i18n="serviceMaps">Google Maps</h4><p data-i18n="serviceMapsText">Categorías, fotos y enlaces para una presencia local más clara.</p></div></div></div>
+</article>
+<article class="panel panel-about" id="perfil" role="tabpanel" aria-labelledby="tab-perfil" hidden>
+<span class="label" data-i18n="profileLabel">Un poco sobre mí</span> <h2 data-i18n="profileTitle">De la idea a una experiencia que funciona.</h2>
+<p class="panel-lead" data-i18n="profileText">Soy Santiago, desarrollador web de San Antonio de Areco, Argentina. Me gusta construir interfaces que se entiendan rápido, tengan personalidad y den ganas de volver.</p><p class="profile-more" data-i18n="profileMore">Trabajo en proyectos web, aplicaciones y herramientas de comunidad. En cada uno busco resolver una necesidad concreta y cuidar cómo se usa.</p>
+<dl class="profile-details"><div><dt data-i18n="locationLabel">Dónde trabajo</dt><dd data-i18n="locationText">Argentina · de forma remota</dd></div><div><dt data-i18n="approachLabel">Mi proceso</dt><dd data-i18n="approachText">Defino los objetivos, diseño una propuesta y desarrollo la solución. Después verifico su funcionamiento y ajusto los detalles.</dd></div></dl>
+<div class="profile-social"><button type="button" class="icon-control" data-channel="github"  data-icon-label="github" aria-label="GitHub"><svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.57.1.78-.25.78-.55v-2.14c-3.2.69-3.88-1.36-3.88-1.36-.52-1.33-1.28-1.69-1.28-1.69-1.05-.72.08-.7.08-.7 1.16.08 1.76 1.19 1.76 1.19 1.03 1.76 2.69 1.25 3.35.96.1-.74.4-1.25.73-1.54-2.55-.29-5.23-1.28-5.23-5.69 0-1.25.45-2.28 1.18-3.08-.12-.29-.51-1.46.11-3.04 0 0 .96-.31 3.16 1.18a10.97 10.97 0 0 1 5.75 0c2.2-1.49 3.16-1.18 3.16-1.18.62 1.58.23 2.75.11 3.04.73.8 1.18 1.83 1.18 3.08 0 4.42-2.69 5.39-5.25 5.68.41.36.78 1.06.78 2.13v3.16c0 .3.21.66.79.55A11.51 11.51 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5Z"/></svg></button></div>
+</article>
+<article class="panel panel-projects" id="proyectos" role="tabpanel" aria-labelledby="tab-proyectos" hidden>
+<span class="label" data-i18n="projectsLabel">Proyectos propios</span>
+<div class="project-heading"><h2 id="project-name">APA-WEB</h2><div class="project-heading-meta"><span id="project-status" class="project-status">Plataforma web</span><button type="button" class="icon-control compact" id="project-open" data-icon-label="demo" aria-label="Visitar el proyecto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h6v6m0-6L10 14"/><path d="M10 4H5a1 1 0 0 0-1 1v14a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-5"/></svg></button><button type="button" class="icon-control compact" id="project-code" data-icon-label="code" aria-label="Ver código" hidden><svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.57.1.78-.25.78-.55v-2.14c-3.2.69-3.88-1.36-3.88-1.36-.52-1.33-1.28-1.69-1.28-1.69-1.05-.72.08-.7.08-.7 1.16.08 1.76 1.19 1.76 1.19 1.03 1.76 2.69 1.25 3.35.96.1-.74.4-1.25.73-1.54-2.55-.29-5.23-1.28-5.23-5.69 0-1.25.45-2.28 1.18-3.08-.12-.29-.51-1.46.11-3.04 0 0 .96-.31 3.16 1.18a10.97 10.97 0 0 1 5.75 0c2.2-1.49 3.16-1.18 3.16-1.18.62 1.58.23 2.75.11 3.04.73.8 1.18 1.83 1.18 3.08 0 4.42-2.69 5.39-5.25 5.68.41.36.78 1.06.78 2.13v3.16c0 .3.21.66.79.55A11.51 11.51 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5Z"/></svg></button></div></div>
+<div class="project-carousel" id="project-carousel" role="region" tabindex="0" aria-roledescription="carousel" aria-label="Proyectos">
+<button type="button" class="carousel-arrow" id="project-prev" aria-label="Proyecto anterior"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 5-7 7 7 7"/></svg></button>
+<div class="project-card project-summary" id="project-card">
+<div class="project-about"><h3 class="project-section-label" data-i18n="projectAbout">De qué trata</h3><p id="project-description" aria-live="polite"></p></div>
+<div class="project-tools"><h3 class="project-section-label" data-i18n="projectTools">Tecnologías utilizadas</h3><div id="project-stack" class="project-stack"></div></div>
+</div>
+<button type="button" class="carousel-arrow" id="project-next" aria-label="Siguiente proyecto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg></button>
+</div>
+<div class="project-dots" id="project-dots" role="group" aria-label="Elegir proyecto"></div>
+</article>
+<article class="panel panel-stack" id="tecnologias" role="tabpanel" aria-labelledby="tab-tecnologias" hidden>
+<span class="label" data-i18n="techLabel">Tecnologías</span> <h2 data-i18n="techTitle">Mi stack de desarrollo.</h2><p class="panel-lead" data-i18n="techText">Las herramientas que uso para diseñar, desarrollar y publicar mis proyectos.</p>
+<div class="stack-categories" role="group" aria-label="Tecnologías"><button type="button" data-stack="web" aria-pressed="true" data-i18n="webGroup">Web</button><button type="button" data-stack="apps" aria-pressed="false" data-i18n="appsGroup">Apps</button><button type="button" data-stack="data" aria-pressed="false" data-i18n="dataGroup">Datos y publicación</button><button type="button" data-stack="motion" aria-pressed="false" data-i18n="motionGroup">Animación y herramientas</button></div>
+<div id="stack-grid" class="stack-grid"></div><p class="tech-foot" data-i18n="techFoot">Las tecnologías acompañan al proyecto: primero defino qué necesita la persona que lo va a usar.</p>
+</article>
+<article class="panel panel-contact" id="contacto" role="tabpanel" aria-labelledby="tab-contacto" hidden>
+<span class="label" data-i18n="contactLabel">Hablemos</span><h2 data-i18n="contactTitle">¿Qué te gustaría construir?</h2>
+<p class="panel-lead" data-i18n="contactText">Contame qué hacés y qué querés mejorar. Podemos empezar con una idea, una web que necesita cambios o un portfolio que todavía no existe.</p>
+<div class="contact-icons" role="group" aria-label="Contacto"><button type="button" class="icon-control contact-icon" data-channel="whatsapp"  data-icon-label="whatsapp" aria-label="WhatsApp"><svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M20.52 3.48A11.9 11.9 0 0 0 12.03 0C5.4 0 .01 5.39 0 12.02c0 2.12.55 4.2 1.6 6.03L0 24l6.11-1.6a12.02 12.02 0 0 0 5.9 1.51h.01c6.62 0 12.01-5.39 12.02-12.02a11.92 11.92 0 0 0-3.52-8.41ZM12.02 21.9a9.94 9.94 0 0 1-5.07-1.39l-.36-.21-3.63.95.97-3.53-.23-.37a9.93 9.93 0 0 1-1.52-5.33c0-5.5 4.48-9.97 9.98-9.97a9.9 9.9 0 0 1 7.06 2.92 9.9 9.9 0 0 1 2.92 7.06c-.01 5.5-4.49 9.87-10.12 9.87Zm5.47-7.45c-.3-.15-1.77-.87-2.04-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.17-.17.2-.35.22-.65.07-.3-.15-1.26-.46-2.4-1.48-.89-.79-1.48-1.77-1.66-2.07-.17-.3-.02-.46.13-.61.14-.13.3-.35.45-.52.15-.18.2-.3.3-.5.1-.2.05-.37-.03-.52-.07-.15-.67-1.62-.92-2.22-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.79.37-.27.3-1.04 1.02-1.04 2.49s1.07 2.89 1.22 3.09c.15.2 2.11 3.22 5.11 4.52.71.31 1.26.5 1.69.64.71.23 1.35.2 1.86.12.57-.09 1.77-.72 2.02-1.42.25-.69.25-1.29.17-1.41-.07-.13-.27-.2-.57-.35Z"/></svg></button><button type="button" class="icon-control contact-icon" data-channel="email"  data-icon-label="email" aria-label="Email"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m3 5 9 7 9-7"/></svg></button><button type="button" class="icon-control contact-icon" data-channel="github"  data-icon-label="github" aria-label="GitHub"><svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.57.1.78-.25.78-.55v-2.14c-3.2.69-3.88-1.36-3.88-1.36-.52-1.33-1.28-1.69-1.28-1.69-1.05-.72.08-.7.08-.7 1.16.08 1.76 1.19 1.76 1.19 1.03 1.76 2.69 1.25 3.35.96.1-.74.4-1.25.73-1.54-2.55-.29-5.23-1.28-5.23-5.69 0-1.25.45-2.28 1.18-3.08-.12-.29-.51-1.46.11-3.04 0 0 .96-.31 3.16 1.18a10.97 10.97 0 0 1 5.75 0c2.2-1.49 3.16-1.18 3.16-1.18.62 1.58.23 2.75.11 3.04.73.8 1.18 1.83 1.18 3.08 0 4.42-2.69 5.39-5.25 5.68.41.36.78 1.06.78 2.13v3.16c0 .3.21.66.79.55A11.51 11.51 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5Z"/></svg></button></div>
+<p class="contact-hint" data-i18n="contactHint">Elegí un canal y contame un poco sobre tu idea.</p>
+<p class="contact-foot" data-i18n="contactFoot">Trabajo desde Argentina con negocios y profesionales de otros países.</p>
+</article>
+</section>
 </main>
+<dialog id="action-dialog" aria-labelledby="dialog-title" aria-describedby="dialog-description">
+<form id="action-form">
+<button type="button" class="dialog-close" id="dialog-close" aria-label="Cerrar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
+<div class="dialog-icon" id="dialog-icon" aria-hidden="true"></div>
+<h2 id="dialog-title">Contame tu idea</h2><p id="dialog-description"></p>
+<div id="message-field"><label for="inquiry-message" data-i18n="messageLabel">¿En qué puedo ayudarte?</label><textarea id="inquiry-message" name="message" rows="4" minlength="10" maxlength="1000" autocomplete="off"></textarea></div>
+<button type="submit" class="action solid" id="dialog-continue">Continuar</button>
+</form>
+</dialog>
+<script>
+(() => {
+const tabs = [...document.querySelectorAll('[role="tab"]')];
+const panels = [...document.querySelectorAll('[role="tabpanel"]')];
+const tablist = document.querySelector('.menu-options');
+let selectedTab = tabs[0];
+function highlight(tab) {
+  tabs.forEach(button => button.setAttribute('data-highlighted', String(button === tab)));
+}
+highlight(selectedTab);
+// Keep the last hovered option highlighted while crossing gaps between buttons.
+tablist.addEventListener('pointerleave', () => highlight(selectedTab));
+function select(tab) {
+selectedTab = tab;
+highlight(tab);
+tabs.forEach(button => {
+const selected = button === tab;
+button.setAttribute('aria-selected', String(selected));
+button.tabIndex = selected ? 0 : -1;
+});
+panels.forEach(panel => {
+panel.hidden = panel.id !== tab.dataset.panel;
+panel.classList.remove('enter');
+});
+const active = document.getElementById(tab.dataset.panel);
+void active.offsetWidth;
+active.classList.add('enter');
+}
+tabs.forEach((tab, index) => {
+tab.addEventListener('pointerenter', event => {
+  if (event.pointerType !== 'touch') highlight(tab);
+});
+tab.addEventListener('focus', () => highlight(tab));
+tab.addEventListener('click', () => select(tab));
+tab.addEventListener('keydown', event => {
+let next;
+if (event.key === 'ArrowDown' || event.key === 'ArrowRight') next = (index + 1) % tabs.length;
+if (event.key === 'ArrowUp' || event.key === 'ArrowLeft') next = (index + tabs.length - 1) % tabs.length;
+if (event.key === 'Home') next = 0;
+if (event.key === 'End') next = tabs.length - 1;
+if (next !== undefined) { event.preventDefault(); select(tabs[next]); tabs[next].focus(); }
+});
+});
+})();
+</script>
+<script>
+(() => {
+const name = document.querySelector('.name');
+const words = [...name.querySelectorAll('span')];
+function fitName() {
+  const target = Math.min(name.clientWidth, name.parentElement.clientWidth * .8);
+  words.forEach(word => {
+    word.style.fontSize = '100px';
+    const measured = word.getBoundingClientRect().width;
+    if (measured > 0) word.style.fontSize = (100 * target / measured) + 'px';
+  });
+}
+fitName();
+new ResizeObserver(fitName).observe(name);
+if (document.fonts) document.fonts.ready.then(fitName);
+})();
+</script>
+<script>
+(() => {
+const ui = {"es":{"description":"Desarrollador web · Argentina","homeTab":"INICIO","profileTab":"PERFIL","projectsTab":"PROYECTOS","techTab":"TECNOLOGÍAS","contactTab":"CONTACTO","homeLabel":"Desarrollo web, con intención.","homeTitle":"Creo webs que convierten.","homeText":"Para que entiendan lo que hacés, vean lo que te diferencia y sepan cómo contactarte. Diseño y desarrollo sitios claros para negocios y profesionales.","homeCTA":"Contame tu idea ↗","workCTA":"Explorar proyectos ↗","servicesLabel":"En qué te puedo ayudar","serviceWeb":"Webs y portfolios","serviceWebText":"Tu propuesta, tus trabajos y el contacto, bien ordenados.","serviceMaps":"Google Maps","serviceMapsText":"Categorías, fotos y enlaces para una presencia local más clara.","profileLabel":"Un poco sobre mí","profileTitle":"De la idea a una experiencia que funciona.","profileText":"Soy Santiago, desarrollador web de San Antonio de Areco, Argentina. Me gusta construir interfaces que se entiendan rápido, tengan personalidad y den ganas de volver.","profileMore":"Trabajo en proyectos web, aplicaciones y herramientas de comunidad. En cada uno busco resolver una necesidad concreta y cuidar cómo se usa.","locationLabel":"Dónde trabajo","locationText":"Argentina · de forma remota","approachLabel":"Mi proceso","approachText":"Defino los objetivos, diseño una propuesta y desarrollo la solución. Después verifico su funcionamiento y ajusto los detalles.","github":"Ver GitHub","projectsLabel":"Proyectos propios","projectsTitle":"Explorá lo que construyo.","projectChoose":"Elegir proyecto","projectNext":"Siguiente proyecto","projectPrevious":"Proyecto anterior","projectLive":"Demo publicada","projectPending":"Demo pública pendiente","projectBot":"Herramienta de Discord","projectInProgress":"En desarrollo","projectCode":"Código público","projectTech":"Construido con","launchPreview":"Explorar demo aquí","openDemo":"Visitar el proyecto","openCode":"Ver código","previewPending":"Todavía no hay una demo pública.","previewBot":"Una herramienta que funciona dentro de Discord.","previewNote":"Podés explorar la web dentro de esta pantalla o abrirla en una pestaña.","previewDefault":"Vista del proyecto","previewLaunch":"Abrir demo de APA-WEB","previewNoLive":"Podés conocer el objetivo y las tecnologías de este proyecto.","techLabel":"Tecnologías","techTitle":"Mi stack de desarrollo.","techText":"Las herramientas que uso para diseñar, desarrollar y publicar mis proyectos.","webGroup":"Web","appsGroup":"Apps","dataGroup":"Datos y publicación","motionGroup":"Animación y herramientas","techFoot":"Las tecnologías acompañan al proyecto: primero defino qué necesita la persona que lo va a usar.","contactLabel":"Hablemos","contactTitle":"¿Qué te gustaría construir?","contactText":"Contame qué hacés y qué querés mejorar. Podemos empezar con una idea, una web que necesita cambios o un portfolio que todavía no existe.","whatsappCTA":"WhatsApp","emailCTA":"Email","contactMailLabel":"También podés escribirme a","copyEmail":"Copiar email","copied":"Email copiado","copyFailed":"Seleccioná el email para copiarlo","contactFoot":"Trabajo desde Argentina con negocios y profesionales de otros países.","navigation":"Secciones del portfolio","social":"Redes y contacto","language":"Idioma","photo":"Foto de Santiago Monzón","meta":"Desarrollo web desde Argentina. Proyectos, tecnologías, portfolios y presencia en Google Maps.","contactHint":"Elegí un canal y contame un poco sobre tu idea.","projectHelp":"También podés visitar el proyecto desde el icono de arriba.","dialogExternalTitle":"Abrir una página externa","dialogExternalText":"Continuá para visitar el sitio en otra pestaña.","dialogContactTitle":"Contame tu idea","dialogContactText":"Escribí un mensaje breve antes de continuar por el canal que elegiste.","messageLabel":"¿En qué puedo ayudarte?","messagePlaceholder":"Qué hacés, qué necesitás y qué te gustaría mejorar…","messageRequired":"Escribí un mensaje de al menos 10 caracteres.","continueWhatsApp":"Continuar en WhatsApp","continueEmail":"Preparar email","continueGithub":"Abrir GitHub","continueProject":"Abrir proyecto","closeDialog":"Cerrar","emailSubject":"Consulta desde tu portfolio","projectJump":"Ver proyecto"},"en":{"description":"Web developer · Argentina","homeTab":"HOME","profileTab":"ABOUT","projectsTab":"PROJECTS","techTab":"TECHNOLOGIES","contactTab":"CONTACT","homeLabel":"Web development, with purpose.","homeTitle":"I build websites that convert.","homeText":"So people understand what you do, see what makes you different and know how to reach you. I design and build clear websites for businesses and independent professionals.","homeCTA":"Tell me your idea ↗","workCTA":"Explore projects ↗","servicesLabel":"How I can help","serviceWeb":"Websites and portfolios","serviceWebText":"Your offering, your work and your contact details, thoughtfully organized.","serviceMaps":"Google Maps","serviceMapsText":"Categories, photos and links for a clearer local presence.","profileLabel":"A little about me","profileTitle":"From an idea to an experience that works.","profileText":"I’m Santiago, a web developer from San Antonio de Areco, Argentina. I enjoy building interfaces that are easy to understand, have personality and make people want to return.","profileMore":"I work on websites, applications and community tools. In each project I aim to solve a specific need and make the experience easy to use.","locationLabel":"Where I work","locationText":"Argentina · remotely","approachLabel":"My process","approachText":"I define the goals, design a proposal and build the solution. Then I test how it works and refine the details.","github":"View GitHub","projectsLabel":"Personal projects","projectsTitle":"Explore what I build.","projectChoose":"Choose a project","projectNext":"Next project","projectPrevious":"Previous project","projectLive":"Live demo","projectPending":"Public demo coming later","projectBot":"Discord tool","projectInProgress":"In development","projectCode":"Public source","projectTech":"Built with","launchPreview":"Explore the demo here","openDemo":"Visit the project","openCode":"View source","previewPending":"There isn’t a public demo yet.","previewBot":"A tool that runs inside Discord.","previewNote":"Explore the website in this screen or open it in a new tab.","previewDefault":"Project preview","previewLaunch":"Open the APA-WEB demo","previewNoLive":"Explore this project’s purpose and technologies.","techLabel":"Technologies","techTitle":"My development stack.","techText":"The tools I use to design, build and publish my projects.","webGroup":"Web","appsGroup":"Apps","dataGroup":"Data and deployment","motionGroup":"Animation and tools","techFoot":"The tools serve the project: I start by understanding what the people using it need.","contactLabel":"Let’s talk","contactTitle":"What would you like to build?","contactText":"Tell me what you do and what you’d like to improve. We can start with an idea, a website that needs changes or a portfolio that doesn’t exist yet.","whatsappCTA":"WhatsApp","emailCTA":"Email","contactMailLabel":"You can also write to","copyEmail":"Copy email","copied":"Email copied","copyFailed":"Select the email to copy it","contactFoot":"I work from Argentina with businesses and professionals in other countries.","navigation":"Portfolio sections","social":"Social links and contact","language":"Language","photo":"Photo of Santiago Monzón","meta":"Web development from Argentina. Projects, technologies, portfolios and Google Maps presence.","contactHint":"Choose a channel and tell me a little about your idea.","projectHelp":"You can also visit the project using the icon above.","dialogExternalTitle":"Open an external page","dialogExternalText":"Continue to visit the website in a new tab.","dialogContactTitle":"Tell me your idea","dialogContactText":"Write a short message before continuing through your chosen channel.","messageLabel":"How can I help?","messagePlaceholder":"What you do, what you need and what you would like to improve…","messageRequired":"Write a message of at least 10 characters.","continueWhatsApp":"Continue on WhatsApp","continueEmail":"Prepare email","continueGithub":"Open GitHub","continueProject":"Open project","closeDialog":"Close","emailSubject":"Inquiry from your portfolio","projectJump":"View project"},"pt":{"description":"Desenvolvedor web · Argentina","homeTab":"INÍCIO","profileTab":"PERFIL","projectsTab":"PROJETOS","techTab":"TECNOLOGIAS","contactTab":"CONTATO","homeLabel":"Desenvolvimento web, com intenção.","homeTitle":"Crio sites que convertem.","homeText":"Para que as pessoas entendam o que você faz, vejam o seu diferencial e saibam como entrar em contato. Crio sites claros para negócios e profissionais.","homeCTA":"Conte sua ideia ↗","workCTA":"Explorar projetos ↗","servicesLabel":"Como posso ajudar","serviceWeb":"Sites e portfólios","serviceWebText":"Sua proposta, seus trabalhos e o contato, bem organizados.","serviceMaps":"Google Maps","serviceMapsText":"Categorias, fotos e links para uma presença local mais clara.","profileLabel":"Um pouco sobre mim","profileTitle":"Da ideia a uma experiência que funciona.","profileText":"Sou Santiago, desenvolvedor web de San Antonio de Areco, Argentina. Gosto de criar interfaces fáceis de entender, com personalidade e que dão vontade de voltar.","profileMore":"Trabalho em projetos web, aplicativos e ferramentas para comunidades. Em cada projeto, busco resolver uma necessidade concreta e cuidar da experiência de uso.","locationLabel":"Onde trabalho","locationText":"Argentina · remotamente","approachLabel":"Meu processo","approachText":"Defino os objetivos, desenho uma proposta e desenvolvo a solução. Depois testo o funcionamento e ajusto os detalhes.","github":"Ver GitHub","projectsLabel":"Projetos próprios","projectsTitle":"Explore o que eu construo.","projectChoose":"Escolher projeto","projectNext":"Próximo projeto","projectPrevious":"Projeto anterior","projectLive":"Demo publicada","projectPending":"Demo pública pendente","projectBot":"Ferramenta do Discord","projectInProgress":"Em desenvolvimento","projectCode":"Código público","projectTech":"Construído com","launchPreview":"Explorar a demo aqui","openDemo":"Visitar o projeto","openCode":"Ver código","previewPending":"Ainda não há uma demo pública.","previewBot":"Uma ferramenta que funciona dentro do Discord.","previewNote":"Explore o site nesta tela ou abra em outra aba.","previewDefault":"Visualização do projeto","previewLaunch":"Abrir demo do APA-WEB","previewNoLive":"Conheça o objetivo e as tecnologias deste projeto.","techLabel":"Tecnologias","techTitle":"Meu stack de desenvolvimento.","techText":"As ferramentas que uso para criar, desenvolver e publicar meus projetos.","webGroup":"Web","appsGroup":"Apps","dataGroup":"Dados e publicação","motionGroup":"Animação e ferramentas","techFoot":"As ferramentas acompanham o projeto: primeiro entendo o que a pessoa que vai usar precisa.","contactLabel":"Vamos conversar","contactTitle":"O que você gostaria de criar?","contactText":"Conte o que você faz e o que quer melhorar. Podemos começar com uma ideia, um site que precisa de ajustes ou um portfólio que ainda não existe.","whatsappCTA":"WhatsApp","emailCTA":"Email","contactMailLabel":"Você também pode escrever para","copyEmail":"Copiar email","copied":"Email copiado","copyFailed":"Selecione o email para copiar","contactFoot":"Trabalho da Argentina com negócios e profissionais de outros países.","navigation":"Seções do portfólio","social":"Redes e contato","language":"Idioma","photo":"Foto de Santiago Monzón","meta":"Desenvolvimento web da Argentina. Projetos, tecnologias, portfólios e presença no Google Maps.","contactHint":"Escolha um canal e conte um pouco sobre sua ideia.","projectHelp":"Você também pode visitar o projeto pelo ícone acima.","dialogExternalTitle":"Abrir uma página externa","dialogExternalText":"Continue para visitar o site em outra aba.","dialogContactTitle":"Conte sua ideia","dialogContactText":"Escreva uma mensagem breve antes de continuar pelo canal escolhido.","messageLabel":"Como posso ajudar?","messagePlaceholder":"O que você faz, do que precisa e o que gostaria de melhorar…","messageRequired":"Escreva uma mensagem com pelo menos 10 caracteres.","continueWhatsApp":"Continuar no WhatsApp","continueEmail":"Preparar email","continueGithub":"Abrir GitHub","continueProject":"Abrir projeto","closeDialog":"Fechar","emailSubject":"Consulta pelo seu portfólio","projectJump":"Ver projeto"}};
+Object.assign(ui.es,{"projectLocal":"Demo local interactiva","previewAPA":"El sitio publicado permite explorar ligas, equipos y torneos. Abrilo con el icono superior: su configuración impide incrustarlo en otra web.","previewNative":"Aplicación móvil; no es una página web incrustable.","previewError":"La interacción no pudo iniciarse. Podés abrir la demo con el icono superior.","previewLegacy":"Demo de diseño anterior · ejemplos ilustrativos, sin resultados comerciales verificados."});
+Object.assign(ui.en,{"projectLocal":"Interactive local demo","previewAPA":"Explore leagues, teams and tournaments on the live site. Open it using the icon above: its settings prevent embedding on another website.","previewNative":"Mobile application; this is not an embeddable website.","previewError":"The interaction could not start. Open the demo using the icon above.","previewLegacy":"Previous design demo · illustrative examples, without verified business results."});
+Object.assign(ui.pt,{"projectLocal":"Demo local interativa","previewAPA":"Explore ligas, equipes e torneios no site publicado. Abra pelo ícone acima: sua configuração impede a incorporação em outro site.","previewNative":"Aplicativo móvel; não é uma página web incorporável.","previewError":"A interação não pôde iniciar. Abra a demo pelo ícone acima.","previewLegacy":"Demo de design anterior · exemplos ilustrativos, sem resultados comerciais verificados."});
+Object.assign(ui.es,{"projectAbout":"De qué trata","projectTools":"Tecnologías utilizadas"});
+Object.assign(ui.en,{"projectAbout":"About the project","projectTools":"Technologies used"});
+Object.assign(ui.pt,{"projectAbout":"Sobre o projeto","projectTools":"Tecnologias utilizadas"});
+const projects = [{"id":"apa","name":"APA-WEB","status":"projectLive","url":"https://www.psoargentina.com","icon":"web","stack":["Next.js","React","TypeScript","Supabase","PostgreSQL"],"descriptions":{"es":"Una plataforma para organizar la comunidad de Pro Soccer Online: ligas, equipos, torneos, partidos y rankings.","en":"A platform for the Pro Soccer Online community: leagues, teams, tournaments, matches and rankings.","pt":"Uma plataforma para a comunidade de Pro Soccer Online: ligas, equipes, torneios, partidas e rankings."},"types":{"es":"Plataforma web","en":"Web platform","pt":"Plataforma web"}},{"id":"futapa","name":"FutAPA · Web","status":"projectInProgress","icon":"app","stack":["Next.js","React","TypeScript"],"descriptions":{"es":"Prototipo con colección de cartas, apertura de sobres, recompensas diarias y progreso guardado localmente.","en":"A prototype with card collections, pack opening, daily rewards and locally saved progress.","pt":"Protótipo com coleção de cartas, abertura de pacotes, recompensas diárias e progresso salvo localmente."},"types":{"es":"Prototipo web","en":"Web prototype","pt":"Protótipo web"}},{"id":"sushi","name":"SushiSoul Web","status":"projectPending","icon":"web","stack":["Next.js","React","TypeScript","Motion"],"descriptions":{"es":"Landing gastronómica para presentar la marca, la carta y los locales, con acceso a la app de pedidos.","en":"A restaurant landing page presenting the brand, menu and locations, with access to the ordering app.","pt":"Landing page de gastronomia para apresentar a marca, o cardápio e os locais, com acesso ao aplicativo de pedidos."},"types":{"es":"Landing gastronómica","en":"Restaurant landing page","pt":"Landing de gastronomia"}},{"id":"bot","name":"ApaBotMix","status":"projectBot","icon":"bot","stack":["C#",".NET","DSharpPlus","SQLite"],"descriptions":{"es":"Bot de Discord para organizar partidas: colas por roles, selección de capitanes, draft y rankings.","en":"A Discord bot for organizing matches: role queues, captain selection, drafts and rankings.","pt":"Bot do Discord para organizar partidas: filas por função, seleção de capitães, draft e rankings."},"types":{"es":"Bot de Discord","en":"Discord bot","pt":"Bot do Discord"}},{"id":"flutter","name":"FutAPA · Flutter","status":"projectInProgress","icon":"app","stack":["Flutter","Dart"],"descriptions":{"es":"Versión móvil de FutAPA para explorar la experiencia como aplicación. Versión pública pendiente.","en":"A mobile version of FutAPA, exploring the experience as an app. Public release pending.","pt":"Versão móvel do FutAPA para explorar a experiência como aplicativo. Versão pública pendente."},"types":{"es":"Prototipo móvil","en":"Mobile prototype","pt":"Protótipo móvel"}}];
+const stacks = {"web":[["react","React"],["nextjs","Next.js"],["typescript","TypeScript"],["javascript","JavaScript"],["html5","HTML"],["css3","CSS"],["tailwind","Tailwind CSS"],["nodejs","Node.js"]],"apps":[["flutter","Flutter"],["dart","Dart"],["csharp","C#"],["dotnet",".NET"]],"data":[["supabase","Supabase"],["postgresql","PostgreSQL"],["sqlite","SQLite"],["vercel","Vercel"]],"motion":[["gsap","GSAP"],["motion","Motion"],["git","Git"],["github","GitHub"]]};
+let language = 'es';
+try { const saved = localStorage.getItem('portfolio-language'); if (ui[saved]) language = saved; } catch {}
+let projectIndex = 0, stack = 'web', cardAnimation = null, selectedAction = null;
+const card = document.getElementById('project-card');
+const dialog = document.getElementById('action-dialog');
+const form = document.getElementById('action-form');
+const message = document.getElementById('inquiry-message');
+const text = key => ui[language][key];
+const reducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const stackFiles = Object.fromEntries(Object.values(stacks).flat().map(([file,name])=>[name,file]));
 
-<!-- ============ MODAL PROYECTO ============ -->
-<div id="modal" aria-hidden="true">
-  <div class="m-back" data-close></div>
-  <div class="m-panel" role="dialog" aria-modal="true" aria-labelledby="mTitle">
-    <div class="m-top"><span class="mono" id="mIdx">PROYECTO 01</span><button class="m-close" data-close>✕ CERRAR</button></div>
-    <div class="m-body">
-      <div class="m-shot">
-        <div class="mb-bar"><span class="mb-dots"><i></i><i></i><i></i></span><span class="mb-url" id="mUrl"></span></div>
-        <img id="mImg" src="" alt="">
-      </div>
-      <div class="m-side">
-        <h3 id="mTitle"></h3>
-        <p class="m-que" id="mQue"></p>
-        <div class="m-block"><span class="lab mono">EL RETO</span><p id="mReto"></p></div>
-        <div class="m-block"><span class="lab mono">LA SOLUCIÓN</span><p id="mSol"></p></div>
-        <div class="m-block"><span class="lab mono">EL RESULTADO</span><p id="mRes" class="res"></p></div>
-        <div class="m-chips" id="mStack"></div>
-        <a class="btn wa mag" id="mWa" href="#" target="_blank" rel="noopener">💬 Quiero algo así para mi negocio</a>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div id="toasts" aria-live="polite"></div>
-
-<script src="js/data.js"></script>
-<script src="js/fx.js"></script>
-<script src="js/cardswap.js"></script>
-<script src="js/flowingmenu.js"></script>
-<script src="js/main.js"></script>
+function renderProject() {
+ const project=projects[projectIndex];
+ document.getElementById('project-name').textContent=project.name;
+ document.getElementById('project-status').textContent=project.types[language];
+ document.getElementById('project-description').textContent=project.descriptions[language];
+ document.getElementById('project-open').hidden=!project.url;
+ document.getElementById('project-code').hidden=!project.code;
+ card.setAttribute('aria-label',project.name);
+ document.querySelectorAll('.project-dot').forEach(dot=>dot.setAttribute('aria-pressed',String(dot.dataset.project===project.id)));
+ const tags=document.getElementById('project-stack');tags.replaceChildren();
+ project.stack.forEach(name=>{
+  const span=document.createElement('span'),file=stackFiles[name];
+  if(file){const img=document.createElement('img');img.src='assets/logos/'+file+'.svg';img.alt='';span.append(img);}
+  span.append(document.createTextNode(name));tags.append(span);
+ });
+}
+function chooseProject(index, direction = 1) {
+ projectIndex = (index+projects.length)%projects.length;
+ renderProject();
+ if (!reducedMotion() && card.animate) {
+   if (cardAnimation) cardAnimation.cancel();
+   cardAnimation=card.animate([{opacity:.2,transform:'translateX('+direction*20+'px) scale(.985)'},{opacity:1,transform:'translateX(0) scale(1)'}],{duration:380,easing:'cubic-bezier(.2,.8,.2,1)'});
+ }
+}
+const dots=document.getElementById('project-dots');
+projects.forEach((project,index)=>{
+ const dot=document.createElement('button'); dot.type='button'; dot.className='project-dot'; dot.dataset.project=project.id;
+ dot.addEventListener('click',()=>chooseProject(index,index>=projectIndex?1:-1)); dots.append(dot);
+});
+document.getElementById('project-prev').addEventListener('click',()=>chooseProject(projectIndex-1,-1));
+document.getElementById('project-next').addEventListener('click',()=>chooseProject(projectIndex+1,1));
+document.getElementById('project-carousel').addEventListener('keydown',event=>{
+ if(event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
+ event.preventDefault(); const direction=event.key==='ArrowLeft'?-1:1; chooseProject(projectIndex+direction,direction);
+});
+function renderStack() {
+ const grid = document.getElementById('stack-grid'); grid.replaceChildren();
+ stacks[stack].forEach(([file,name],index) => {
+  const item = document.createElement('div'); item.className='stack-item'; item.style.setProperty('--i',index);
+  const img = document.createElement('img'); img.src='assets/logos/'+file+'.svg'; img.alt=''; img.width=48; img.height=48;
+  const label = document.createElement('span'); label.textContent=name; item.append(img,label); grid.append(item);
+ });
+ document.querySelectorAll('[data-stack]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.stack === stack)));
+}
+document.querySelectorAll('[data-stack]').forEach(button=>button.addEventListener('click',()=>{stack=button.dataset.stack;renderStack();}));
+document.querySelectorAll('[data-go]').forEach(button=>button.addEventListener('click',()=>document.getElementById('tab-'+button.dataset.go).click()));
+function updateDialog() {
+ if (!selectedAction) return;
+ const contact=selectedAction.kind==='email' || selectedAction.kind==='whatsapp';
+ document.getElementById('dialog-title').textContent=text(contact?'dialogContactTitle':'dialogExternalTitle');
+ document.getElementById('dialog-description').textContent=contact?text('dialogContactText'):(selectedAction.name?selectedAction.name+'. ':'')+text('dialogExternalText');
+ document.getElementById('message-field').hidden=!contact;
+ message.required=contact; message.placeholder=text('messagePlaceholder'); message.setCustomValidity('');
+ const key={email:'continueEmail',whatsapp:'continueWhatsApp',github:'continueGithub',demo:'continueProject',code:'continueGithub'}[selectedAction.kind];
+ document.getElementById('dialog-continue').textContent=text(key);
+ document.getElementById('dialog-close').setAttribute('aria-label',text('closeDialog'));
+}
+function openDialog(kind,opener,url=null,name=null) {
+ selectedAction={kind,opener,url,name};
+ message.value='';
+ document.getElementById('dialog-icon').replaceChildren(opener.querySelector('svg').cloneNode(true));
+ updateDialog(); dialog.showModal();
+ if(kind==='email' || kind==='whatsapp') message.focus();
+ else document.getElementById('dialog-continue').focus();
+}
+document.querySelectorAll('[data-channel]').forEach(button=>button.addEventListener('click',()=>openDialog(button.dataset.channel,button)));
+document.getElementById('project-open').addEventListener('click',event=>{
+ const project=projects[projectIndex]; if(project.url) openDialog('demo',event.currentTarget,project.url,project.name);
+});
+document.getElementById('project-code').addEventListener('click',event=>{
+ const project=projects[projectIndex]; if(project.code) openDialog('code',event.currentTarget,project.code,project.name);
+});
+message.addEventListener('input',()=>message.setCustomValidity(''));
+document.getElementById('dialog-close').addEventListener('click',()=>dialog.close());
+dialog.addEventListener('click',event=>{if(event.target===dialog)dialog.close();});
+dialog.addEventListener('close',()=>{const opener=selectedAction && selectedAction.opener;selectedAction=null;if(opener)opener.focus();});
+form.addEventListener('submit',event=>{
+ event.preventDefault(); if(!selectedAction) return;
+ const {kind,url}=selectedAction, inquiry=message.value.trim();
+ const contact=kind==='email' || kind==='whatsapp';
+ if(contact && inquiry.length<10) {message.setCustomValidity(text('messageRequired'));message.reportValidity();return;}
+ let destination=url;
+ if(kind==='email') {
+   const address=['monzonsantiagodev','gmail.com'].join('@');
+   destination='mailto:'+address+'?subject='+encodeURIComponent(text('emailSubject'))+'&body='+encodeURIComponent(inquiry);
+ } else if(kind==='whatsapp') {
+   destination='https://wa.me/'+['54','2325','458638'].join('')+'?text='+encodeURIComponent(inquiry);
+ } else if(kind==='github') destination='https://github.com/'+'MonzonSantiago';
+ if(!destination) return;
+ window.open(destination,'_blank','noopener,noreferrer');
+ dialog.close();
+});
+function changeLanguage(next,animate = true) {
+ language=ui[next]?next:'es';
+ document.querySelectorAll('[data-i18n]').forEach(node=>{node.textContent=text(node.dataset.i18n);});
+ document.querySelectorAll('[data-language]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.language === language)));
+ document.querySelectorAll('[data-icon-label]').forEach(button=>{
+   const key={github:'github',email:'emailCTA',whatsapp:'whatsappCTA',demo:'openDemo',code:'openCode'}[button.dataset.iconLabel];
+   button.setAttribute('aria-label',text(key)); button.setAttribute('title',text(key));
+ });
+ document.querySelectorAll('.project-dot').forEach((dot,index)=>dot.setAttribute('aria-label',text('projectJump')+': '+projects[index].name));
+ document.documentElement.lang=language==='pt'?'pt-BR':language;
+ document.title='Santiago Monzón · '+(language==='pt'?'Portfólio':'Portfolio');
+ document.querySelector('meta[name="description"]').setAttribute('content',text('meta'));
+ document.querySelector('.menu').setAttribute('aria-label',text('navigation'));
+ document.querySelector('.social-links').setAttribute('aria-label',text('social'));
+ document.querySelector('.language-switch').setAttribute('aria-label',text('language'));
+ document.querySelector('.menu-portrait').alt=text('photo');
+ document.getElementById('project-prev').setAttribute('aria-label',text('projectPrevious'));
+ document.getElementById('project-next').setAttribute('aria-label',text('projectNext'));
+ document.getElementById('project-carousel').setAttribute('aria-label',text('projectsLabel'));
+ document.getElementById('project-dots').setAttribute('aria-label',text('projectChoose'));
+ document.querySelector('.stack-categories').setAttribute('aria-label',text('techLabel'));
+ document.querySelector('.contact-icons').setAttribute('aria-label',text('contactLabel'));
+ document.getElementById('dialog-close').setAttribute('aria-label',text('closeDialog'));
+ renderProject(); updateDialog();
+ const panel=document.querySelector('.panel:not([hidden])');
+ if(animate && panel.animate && !reducedMotion()) panel.animate([{opacity:.5,transform:'translateY(5px)'},{opacity:1,transform:'translateY(0)'}],{duration:240,easing:'ease-out'});
+ try {localStorage.setItem('portfolio-language',language);} catch {}
+}
+document.querySelectorAll('[data-language]').forEach(button=>button.addEventListener('click',()=>changeLanguage(button.dataset.language)));
+renderStack(); changeLanguage(language,false);
+})();
+</script>
 </body>
 </html>
 
-
-              <script>
-                              /* ✏️ EDITÁ ACÁ: tus datos, tus proyectos, tus textos. */
-const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
-const $  = s => document.querySelector(s);
-const $$ = s => Array.from(document.querySelectorAll(s));
-
-const CONFIG = {
-  wa: '542325458638',
-  email: 'hola@santiagomonzon.dev',
-  city: 'San Antonio de Areco, Buenos Aires'
-};
-
-const PROJECTS = [
-  {id:'vela', name:'Vela & Mar', kind:'tienda', kindLabel:'Tienda online', year:2025, score:98, seed:'web-ecommerce-cosmetica',
-   que:'Tienda online de cosmética natural con venta a todo el país.',
-   reto:'La dueña vendía por Instagram y se le perdían pedidos entre mensajes.',
-   solucion:'Tienda con stock automático, pagos online y un panel tan simple que carga productos sin saber nada de tecnología.',
-   resultado:'+38% de ventas en 3 meses y cero pedidos perdidos.',
-   stack:['Diseño a medida','Pagos online','Panel autogestionable']},
-  {id:'nordica', name:'Nórdica Estudio', kind:'negocio', kindLabel:'Página de negocio', year:2024, score:96, seed:'web-arquitectura-estudio',
-   que:'Página institucional para un estudio de arquitectura.',
-   reto:'Tenían obras increíbles pero ninguna presencia en internet.',
-   solucion:'Portfolio elegante con índice de obras y formulario de consultas que llega directo a su mail.',
-   resultado:'Consultas de clientes nuevos todas las semanas.',
-   stack:['Diseño propio','Galería de obras','Formulario']},
-  {id:'madrigal', name:'Café Madrigal', kind:'landing', kindLabel:'Landing', year:2025, score:97, seed:'web-cafe-especialidad',
-   que:'Landing de una pantalla para café de especialidad.',
-   reto:'Necesitaban llenar reservas de cata antes de abrir el local.',
-   solucion:'Página rápida con menú, fotos y reserva en 2 toques desde el celular.',
-   resultado:'Reservas agotadas la primera semana.',
-   stack:['Una pantalla','Reservas','Carga instantánea']},
-  {id:'atlas', name:'Atlas Gimnasio', kind:'sistema', kindLabel:'Sistema de turnos', year:2024, score:94, seed:'webapp-gimnasio-reservas',
-   que:'Sistema de reserva de clases para un gimnasio.',
-   reto:'Los turnos se manejaban por WhatsApp y era un caos diario.',
-   solucion:'App web con calendario en tiempo real y avisos automáticos a los socios.',
-   resultado:'Se acabó el caos: todo automático.',
-   stack:['Turnos online','Avisos automáticos','Celular']},
-  {id:'papiro', name:'Editorial Papiro', kind:'negocio', kindLabel:'Página de negocio', year:2024, score:95, seed:'web-editorial-libros',
-   que:'Casa digital para una editorial independiente.',
-   reto:'El catálogo vivía en un PDF que nadie leía.',
-   solucion:'Web con catálogo autogestionable, fichas de autor y blog que carga en menos de un segundo.',
-   resultado:'Ellos mismos actualizan todo sin llamar a nadie.',
-   stack:['WordPress','Catálogo','Blog']},
-  {id:'ruta88', name:'Ruta 88 Hamburguesas', kind:'landing', kindLabel:'Landing', year:2023, score:93, seed:'web-foodtruck-burgers',
-   que:'Página para food truck de smash burgers.',
-   reto:'La gente nunca sabía dónde estaba parada la truck.',
-   solucion:'Menú con fotos, mapa de paradas semanal y pedido directo por WhatsApp.',
-   resultado:'Pedidos por WhatsApp todos los días.',
-   stack:['Menú digital','Mapa semanal','WhatsApp']},
-  {id:'huerta', name:'Huerta Viva', kind:'tienda', kindLabel:'Tienda online', year:2023, score:92, seed:'web-ecommerce-organico',
-   que:'Mercado orgánico online con canastas por suscripción.',
-   reto:'Tomaban pedidos por planilla de cálculo y mensajes de voz.',
-   solucion:'Tienda con canastas semanales, suscripciones y reparto zonificado.',
-   resultado:'Pedidos ordenados y clientes suscriptos.',
-   stack:['Suscripciones','Delivery','Tienda a medida']},
-  {id:'lumen', name:'Lumen Fotografía', kind:'negocio', kindLabel:'Página de negocio', year:2023, score:96, seed:'web-fotografia-portfolio',
-   que:'Portfolio para fotógrafa documental.',
-   reto:'Sus fotos pesaban tanto que la página tardaba una eternidad.',
-   solucion:'Galería optimizada con carga progresiva y fondo neutro que no compite con la obra.',
-   resultado:'Más sesiones reservadas por la web.',
-   stack:['Galería rápida','Optimización','Contacto']}
-];
-
-const KINDS = [['todas','Todos'],['tienda','Tiendas online'],['negocio','Páginas de negocio'],['landing','Landings'],['sistema','Sistemas']];
-
-/* Animaciones con propósito */
-
-/* Reveals al scrollear */
-function revealInit(){
-  const io = new IntersectionObserver(es=>es.forEach(en=>{
-    if(en.isIntersecting){ en.target.classList.add('in'); io.unobserve(en.target); }
-  }),{threshold:.15});
-  $$('.reveal, .steps').forEach(el=>io.observe(el));
-}
-
-/* Títulos que se decodifican */
-function scramble(el){
-  if(REDUCED || !el) return;
-  const chars = '#/\\<>*+■';
-  const original = el.dataset.text || el.textContent;
-  let frame = 0; const total = original.length * 2.4;
-  (function tick(){
-    el.textContent = original.split('').map((c,i)=> i < frame/2.4 ? c : (c===' '?' ':chars[Math.floor(Math.random()*chars.length)])).join('');
-    if(frame++ < total) requestAnimationFrame(tick); else el.textContent = original;
-  })();
-}
-function scrambleInit(){
-  const so = new IntersectionObserver(es=>es.forEach(en=>{
-    if(en.isIntersecting){ scramble(en.target); so.unobserve(en.target); }
-  }),{threshold:.5});
-  $$('[data-scramble]').forEach(el=>so.observe(el));
-}
-
-/* Contadores */
-function countersInit(){
-  let done = false;
-  new IntersectionObserver(es=>{
-    if(es[0].isIntersecting && !done){
-      done = true;
-      $$('[data-count]').forEach(el=>{
-        const t = +el.dataset.count;
-        if(REDUCED){ el.textContent = t; return; }
-        const t0 = performance.now();
-        (function st(n){ const k = Math.min((n-t0)/1200,1);
-          el.textContent = Math.round(t*(1-Math.pow(1-k,3)));
-          if(k<1) requestAnimationFrame(st); })(t0);
-      });
-    }
-  },{threshold:.4}).observe($('.hero-stats'));
-}
-
-/* Botones magnéticos */
-function magneticInit(){
-  if(REDUCED) return;
-  $$('.mag').forEach(el=>{
-    el.addEventListener('mousemove', e=>{
-      const r = el.getBoundingClientRect();
-      el.style.translate = ((e.clientX-r.left-r.width/2)*.12)+'px '+((e.clientY-r.top-r.height/2)*.18)+'px';
-    });
-    el.addEventListener('mouseleave', ()=>{ el.style.translate = '0px 0px'; });
-  });
-}
-
-/* Confetti + toast (easter eggs) */
-function confetti(n){
-  const cols = ['#b8e62e','#ffd23f','#ff3ea5','#25d366','#181c18'];
-  for(let i=0;i<(n||60);i++){
-    const c = document.createElement('div'); c.className='confetti';
-    c.style.left = Math.random()*100+'vw';
-    c.style.background = cols[i%cols.length];
-    c.style.animationDelay = (Math.random()*.8)+'s';
-    document.body.appendChild(c);
-    setTimeout(()=>c.remove(), 3400);
-  }
-}
-function toast(msg){
-  const t = document.createElement('div'); t.className='toast'; t.textContent = msg;
-  $('#toasts').appendChild(t);
-  setTimeout(()=>{ t.classList.add('bye'); setTimeout(()=>t.remove(),350); }, 3500);
-}
-
-/* CardSwap — port vanilla del componente de reactbits.dev, con GSAP */
-const CardSwap = (function(){
-  const makeSlot = (i,dx,dy,total)=>({ x:i*dx, y:-i*dy, z:-i*dx*1.5, zIndex:total-i });
-  const placeNow = (el,slot,skew)=>gsap.set(el,{x:slot.x,y:slot.y,z:slot.z,xPercent:-50,yPercent:-50,skewY:skew,transformOrigin:'center center',zIndex:slot.zIndex,force3D:true});
-
-  function create(container, options={}){
-    const { cardDistance=60, verticalDistance=70, delay=5000, pauseOnHover=false, onCardClick, skewAmount=6, easing='elastic', children=[] } = options;
-    const config = easing==='elastic'
-      ? { ease:'elastic.out(0.6,0.9)', durDrop:2, durMove:2, durReturn:2, promoteOverlap:.9, returnDelay:.05 }
-      : { ease:'power1.inOut', durDrop:.8, durMove:.8, durReturn:.8, promoteOverlap:.45, returnDelay:.2 };
-
-    const cards = children.map(c=>c.el);
-    const order = cards.map((_,i)=>i);
-    let tlRef=null, intervalRef=null, destroyed=false;
-
-    cards.forEach((el,i)=>placeNow(el, makeSlot(i,cardDistance,verticalDistance,cards.length), skewAmount));
-    children.forEach((c,i)=>c.el.addEventListener('click', ()=>onCardClick && onCardClick(i)));
-
-    const swap = ()=>{
-      if(order.length<2 || destroyed) return;
-      const front = order[0], rest = order.slice(1), elFront = cards[front];
-      const tl = gsap.timeline(); tlRef = tl;
-      tl.to(elFront,{y:'+=500',duration:config.durDrop,ease:config.ease});
-      tl.addLabel('promote',`-=${config.durDrop*config.promoteOverlap}`);
-      rest.forEach((idx,i)=>{
-        const el=cards[idx], slot=makeSlot(i,cardDistance,verticalDistance,cards.length);
-        tl.set(el,{zIndex:slot.zIndex},'promote');
-        tl.to(el,{x:slot.x,y:slot.y,z:slot.z,duration:config.durMove,ease:config.ease},`promote+=${i*.15}`);
-      });
-      const back=makeSlot(cards.length-1,cardDistance,verticalDistance,cards.length);
-      tl.addLabel('return',`promote+=${config.durMove*config.returnDelay}`);
-      tl.call(()=>gsap.set(elFront,{zIndex:back.zIndex}),undefined,'return');
-      tl.to(elFront,{x:back.x,y:back.y,z:back.z,duration:config.durReturn,ease:config.ease},'return');
-      tl.call(()=>{ order.length=0; order.push(...rest,front); });
-    };
-
-    swap();
-    intervalRef = setInterval(swap, delay);
-
-    if(pauseOnHover){
-      container.addEventListener('mouseenter',()=>{ tlRef&&tlRef.pause(); clearInterval(intervalRef); });
-      container.addEventListener('mouseleave',()=>{ tlRef&&tlRef.play(); intervalRef=setInterval(swap,delay); });
-    }
-    return { pause(){ tlRef&&tlRef.pause(); clearInterval(intervalRef); }, resume(){ tlRef&&tlRef.play(); intervalRef=setInterval(swap,delay); } };
-  }
-  return { create };
-})();
-
-/* FlowingMenu — port vanilla del componente de reactbits.dev, con GSAP */
-const FlowingMenu = (function(){
-  const dist=(x,y,x2,y2)=>{const a=x-x2,b=y-y2;return a*a+b*b};
-  const edge=(mx,my,w,h)=> dist(mx,my,w/2,0)<dist(mx,my,w/2,h)?'top':'bottom';
-
-  function create(container, options={}){
-    const { items=[], speed=18, marqueeBgColor='#b8e62e' } = options;
-    container.innerHTML=''; container.classList.add('fm-wrap');
-    const menu=document.createElement('nav'); menu.className='fm'; container.appendChild(menu);
-
-    items.forEach(item=>{
-      const itemEl=document.createElement('div'); itemEl.className='fm__item';
-      const link=document.createElement('a'); link.className='fm__link'; link.href='#'; link.textContent=item.text;
-      link.addEventListener('click',e=>{ e.preventDefault(); item.onClick&&item.onClick(); });
-
-      const marquee=document.createElement('div'); marquee.className='fm_marquee'; marquee.style.backgroundColor=marqueeBgColor;
-      const wrap=document.createElement('div'); wrap.className='fm_marquee__inner-wrap';
-      const inner=document.createElement('div'); inner.className='fm_marquee__inner'; inner.setAttribute('aria-hidden','true');
-
-      const reps=Math.max(4, Math.ceil(innerWidth/280)+2);
-      const imgs=item.images||[];
-      for(let i=0;i<reps;i++){
-        const part=document.createElement('div'); part.className='fm_marquee__part';
-        const span=document.createElement('span'); span.textContent=item.text;
-        part.appendChild(span);
-        if(imgs.length){ const im=document.createElement('div'); im.className='fm_marquee__img'; im.style.backgroundImage=`url(${imgs[i%imgs.length]})`; part.appendChild(im); }
-        inner.appendChild(part);
-      }
-      wrap.appendChild(inner); marquee.appendChild(wrap);
-      itemEl.appendChild(link); itemEl.appendChild(marquee); menu.appendChild(itemEl);
-
-      let anim=null;
-      setTimeout(()=>{
-        const p=inner.querySelector('.fm_marquee__part'); if(!p) return;
-        const cw=p.offsetWidth; if(!cw) return;
-        anim&&anim.kill();
-        anim=gsap.to(inner,{x:-cw,duration:speed,ease:'none',repeat:-1});
-      },100);
-
-      const def={duration:.6,ease:'expo.out'};
-      link.addEventListener('mouseenter',ev=>{
-        const r=itemEl.getBoundingClientRect(), e=edge(ev.clientX-r.left,ev.clientY-r.top,r.width,r.height);
-        gsap.timeline({defaults:def})
-          .set(marquee,{y:e==='top'?'-101%':'101%'},0)
-          .set(inner,{y:e==='top'?'101%':'-101%'},0)
-          .to([marquee,inner],{y:'0%'},0);
-      });
-      link.addEventListener('mouseleave',ev=>{
-        const r=itemEl.getBoundingClientRect(), e=edge(ev.clientX-r.left,ev.clientY-r.top,r.width,r.height);
-        gsap.timeline({defaults:def})
-          .to(marquee,{y:e==='top'?'-101%':'101%'},0)
-          .to(inner,{y:e==='top'?'101%':'-101%'},0);
-      });
-    });
-  }
-  return { create };
-})();
-
-/* ============ SIDEBAR: indicador + scroll-spy + teclado ============ */
-const links = $$('#sideNav .snav-link');
-const indicator = $('#navIndicator');
-let selIdx = 0;
-
-function moveIndicator(el){
-  indicator.style.top = el.offsetTop + el.offsetHeight/2 - 11 + 'px';
-}
-function setActive(i, scroll){
-  selIdx = (i + links.length) % links.length;
-  links.forEach((l,j)=>l.classList.toggle('is-active', j===selIdx));
-  moveIndicator(links[selIdx]);
-  if(scroll) links[selIdx].scrollIntoView({behavior: REDUCED?'auto':'smooth'});
-}
-links.forEach((l,i)=>{
-  l.addEventListener('click', ()=>setActive(i,false));
-  l.addEventListener('mouseenter', ()=>moveIndicator(l));
-});
-$('#sideNav').addEventListener('mouseleave', ()=>moveIndicator(links[selIdx]));
-addEventListener('load', ()=>moveIndicator(links[0]));
-addEventListener('resize', ()=>moveIndicator(links[selIdx]));
-
-/* scroll-spy */
-const spy = new IntersectionObserver(es=>es.forEach(en=>{
-  if(en.isIntersecting){
-    const i = links.findIndex(l=>l.getAttribute('href')==='#'+en.target.id);
-    if(i>-1) setActive(i,false);
-  }
-}),{rootMargin:'-45% 0px -50% 0px'});
-['inicio','trabajos','servicios','proceso','sobremi','contacto'].forEach(id=>{
-  const el=document.getElementById(id); el&&spy.observe(el);
-});
-
-/* teclado ↑↓ + Enter (menú seleccionable) */
-document.addEventListener('keydown', e=>{
-  if($('#modal').classList.contains('open')) return;
-  if(e.key==='ArrowDown'){ e.preventDefault(); setActive(selIdx+1,false); }
-  if(e.key==='ArrowUp'){ e.preventDefault(); setActive(selIdx-1,false); }
-  if(e.key==='Enter' && document.activeElement===document.body){ e.preventDefault(); links[selIdx].click(); }
-});
-
-/* ============ móvil ============ */
-$('#burger').addEventListener('click', ()=>document.body.classList.toggle('menu-open'));
-$$('#mobileMenu a').forEach(a=>a.addEventListener('click', ()=>document.body.classList.remove('menu-open')));
-
-/* ============ init fx ============ */
-revealInit(); scrambleInit(); countersInit(); magneticInit();
-addEventListener('load', ()=>document.body.classList.add('loaded'));
-
-/* ============ avatar pixel ============ */
-const SPRITE=["....HHHH....","...HHHHHH...","..HHHHHHHH..","..HSSSSSSH..","..HSESSESH..","...SSSSSS...","...SSRRSS...","....SSSS....","..CCCCCCCC..",".CCWCCCCWCC.",".CC.CCCC.CC.","....CCCC....","...CC..CC...","...KK..KK...","..KKK..KKK.."];
-const PAL={H:'#3d2c1c',S:'#f0c8a0',E:'#17150f',R:'#c0392b',C:'#4c5530',W:'#f2efe6',K:'#2b2b3a'};
-SPRITE.forEach(row=>row.split('').forEach(ch=>{
-  const i=document.createElement('i'); i.style.background=PAL[ch]||'transparent'; $('#avatar').appendChild(i);
-}));
-
-/* ============ filtros + grid ============ */
-let currentFilter='todas', currentList=PROJECTS, currentIdx=0, lastFocus=null;
-function waLink(msg){ return 'https://wa.me/'+CONFIG.wa+'?text='+encodeURIComponent(msg); }
-
-KINDS.forEach(([k,label])=>{
-  const n = k==='todas'?PROJECTS.length:PROJECTS.filter(p=>p.kind===k).length;
-  const b=document.createElement('button');
-  b.className='fbtn'; b.setAttribute('aria-pressed',String(k==='todas'));
-  b.textContent=`${label} (${n})`;
-  b.addEventListener('click',()=>{
-    currentFilter=k;
-    $$('.fbtn').forEach(x=>x.setAttribute('aria-pressed','false'));
-    b.setAttribute('aria-pressed','true');
-    renderGrid();
-  });
-  $('#filters').appendChild(b);
-});
-
-function renderGrid(){
-  currentList = currentFilter==='todas'?PROJECTS:PROJECTS.filter(p=>p.kind===currentFilter);
-  const g=$('#grid'); g.innerHTML='';
-  currentList.forEach((p,i)=>{
-    const el=document.createElement('button');
-    el.className='card'; el.style.animationDelay=REDUCED?'0ms':(i*70)+'ms';
-    el.innerHTML=`
-      <div class="mb-bar"><span class="mb-dots"><i></i><i></i><i></i></span><span class="mb-url">santiagomonzon.dev/${p.id}</span></div>
-      <div class="shot"><img src="https://picsum.photos/seed/${p.seed}/900/580" alt="Captura de ${p.name}" loading="lazy"><span class="score">${p.score}</span></div>
-      <div class="body">
-        <h3>${p.name}</h3>
-        <p class="what">${p.que}</p>
-        <div class="tags"><span class="tag type">${p.kindLabel}</span><span class="tag win">✓ ${p.resultado.split(' y ')[0]}</span><span class="tag">${p.year}</span></div>
-      </div>`;
-    el.addEventListener('click',()=>openModal(currentList.indexOf(p)));
-    g.appendChild(el);
-  });
-}
-renderGrid();
-
-/* ============ modal ============ */
-const modal=$('#modal');
-function openModal(i){
-  currentIdx=i; lastFocus=document.activeElement;
-  const p=currentList[i];
-  $('#mIdx').textContent=`PROYECTO ${String(i+1).padStart(2,'0')} / ${String(currentList.length).padStart(2,'0')} · ${p.year}`;
-  $('#mUrl').textContent='santiagomonzon.dev/'+p.id;
-  $('#mImg').src=`https://picsum.photos/seed/${p.seed}/1100/720`;
-  $('#mImg').alt='Captura ampliada de '+p.name;
-  $('#mTitle').textContent=p.name;
-  $('#mQue').textContent=p.que;
-  $('#mReto').textContent=p.reto;
-  $('#mSol').textContent=p.solucion;
-  $('#mRes').textContent=p.resultado;
-  $('#mStack').innerHTML=p.stack.map(s=>`<span class="tag">${s}</span>`).join('');
-  $('#mWa').href=waLink(`Hola Santiago! Vi tu trabajo "${p.name}" y quiero algo así para mi negocio.`);
-  modal.classList.add('open'); modal.setAttribute('aria-hidden','false');
-  document.body.style.overflow='hidden';
-  $('.m-close').focus();
-}
-function closeModal(){
-  modal.classList.remove('open'); modal.setAttribute('aria-hidden','true');
-  document.body.style.overflow='';
-  if(lastFocus) lastFocus.focus();
-}
-modal.addEventListener('click',e=>{ if(e.target.closest('[data-close]')) closeModal(); });
-document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&modal.classList.contains('open')) closeModal(); });
-
-/* ============ CardSwap (hero) ============ */
-(function(){
-  const container=$('#cardswap'); if(!container) return;
-  const stack=PROJECTS.slice(0,5).map(p=>{
-    const card=document.createElement('div');
-    card.style.cssText='position:absolute;top:50%;left:50%;width:380px;height:270px;border-radius:14px;overflow:hidden;background:#fff;border:1px solid rgba(0,0,0,.15);box-shadow:0 20px 50px rgba(0,0,0,.18);cursor:pointer';
-    card.innerHTML=`
-      <div class="mb-bar"><span class="mb-dots"><i></i><i></i><i></i></span><span class="mb-url">santiagomonzon.dev/${p.id}</span></div>
-      <img src="https://picsum.photos/seed/${p.seed}/760/500" alt="Captura de ${p.name}" style="width:100%;height:calc(100% - 38px);object-fit:cover">`;
-    container.appendChild(card);
-    return {el:card, project:p};
-  });
-  const swap=CardSwap.create(container,{
-    cardDistance:55, verticalDistance:60, delay:4200, pauseOnHover:true, skewAmount:5, easing:'elastic',
-    children:stack,
-    onCardClick:i=>{
-      const real=PROJECTS.findIndex(x=>x.id===stack[i].project.id);
-      currentFilter='todas'; renderGrid();
-      openModal(real);
-    }
-  });
-  new MutationObserver(()=>{ modal.classList.contains('open')?swap.pause():swap.resume(); })
-    .observe(modal,{attributes:true,attributeFilter:['class']});
-})();
-
-/* ============ FlowingMenu (servicios) ============ */
-(function(){
-  const container=$('#flowingMenu'); if(!container) return;
-  const goFilter=kind=>{
-    const idx=KINDS.findIndex(k=>k[0]===kind);
-    const chips=$$('.fbtn'); if(chips[idx]) chips[idx].click();
-    document.getElementById('trabajos').scrollIntoView({behavior:REDUCED?'auto':'smooth'});
-  };
-  FlowingMenu.create(container,{
-    speed:18,
-    items:[
-      {text:'Tiendas online', images:['https://picsum.photos/seed/web-ecommerce-cosmetica/600/400','https://picsum.photos/seed/web-ecommerce-organico/600/400'], onClick:()=>goFilter('tienda')},
-      {text:'Páginas de negocio', images:['https://picsum.photos/seed/web-arquitectura-estudio/600/400','https://picsum.photos/seed/web-editorial-libros/600/400','https://picsum.photos/seed/web-fotografia-portfolio/600/400'], onClick:()=>goFilter('negocio')},
-      {text:'Landings', images:['https://picsum.photos/seed/web-cafe-especialidad/600/400','https://picsum.photos/seed/web-foodtruck-burgers/600/400'], onClick:()=>goFilter('landing')},
-      {text:'Sistemas de turnos', images:['https://picsum.photos/seed/webapp-gimnasio-reservas/600/400'], onClick:()=>goFilter('sistema')},
-      {text:'¿Tu proyecto?', images:['https://picsum.photos/seed/campo-gaucho-areco/600/400','https://picsum.photos/seed/mate-argentina-mesa/600/400'], onClick:()=>document.getElementById('contacto').scrollIntoView({behavior:REDUCED?'auto':'smooth'})}
-    ]
-  });
-})();
-
-/* ============ Konami (easter egg sutil) ============ */
-const KONAMI=['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'];
-let kbuf=[];
-document.addEventListener('keydown',e=>{
-  kbuf.push(e.key.length===1?e.key.toLowerCase():e.key); kbuf=kbuf.slice(-10);
-  if(kbuf.join(',')===KONAMI.join(',')){
-    confetti(80);
-    toast(' +9999 RESPECT — Modo gamer activado.');
-  }
-});
-
-
-              </script>
-                        </body>
-                        </html>
-                    
